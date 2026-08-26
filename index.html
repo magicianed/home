@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>magicianed — ATEM Television Studio HD8 Mastery</title>
+<meta name="description" content="An interactive course that teaches you the Blackmagic ATEM Television Studio HD8 from rack to stream — with 1:1 software simulations, a hardware panel, wiring drills and a certificate." />
+<meta name="color-scheme" content="dark" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/base.css" />
+<link rel="stylesheet" href="assets/css/app.css" />
+<link rel="stylesheet" href="assets/css/sim-atem.css" />
+<link rel="stylesheet" href="assets/css/sim-panel.css" />
+<link rel="stylesheet" href="assets/css/sim-windows.css" />
+<link rel="stylesheet" href="assets/css/sim-wiring.css" />
+<link rel="stylesheet" href="assets/css/certificate.css" />
+<link rel="stylesheet" href="assets/css/layout-fix.css" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23000'/%3E%3Crect x='12' y='16' width='40' height='10' rx='2' fill='%23a259ff'/%3E%3Crect x='12' y='30' width='40' height='4' rx='2' fill='%23303036'/%3E%3Crect x='12' y='38' width='16' height='10' rx='2' fill='%23ff3b30'/%3E%3Crect x='34' y='38' width='18' height='10' rx='2' fill='%2334c759'/%3E%3C/svg%3E" />
+</head>
+<body>
+
+<div id="boot" class="boot">
+  <div class="boot__inner">
+    <div class="boot__mark" aria-hidden="true">
+      <span class="boot__bar boot__bar--a"></span>
+      <span class="boot__bar boot__bar--b"></span>
+      <span class="boot__bar boot__bar--c"></span>
+    </div>
+    <div class="boot__word">magicianed</div>
+  </div>
+</div>
+
+<div id="app" class="app" hidden>
+  <aside class="rail" id="rail">
+    <div class="rail__top">
+      <a class="brand" href="#/dashboard" data-nav>
+        <span class="brand__mark" aria-hidden="true">
+          <i class="brand__seg brand__seg--pgm"></i>
+          <i class="brand__seg brand__seg--pvw"></i>
+        </span>
+        <span class="brand__text">magicianed</span>
+      </a>
+      <button class="rail__close" id="railClose" aria-label="Close menu">&times;</button>
+    </div>
+
+    <div class="rail__user" id="railUser"></div>
+
+    <nav class="rail__nav" id="railNav" aria-label="Course modules"></nav>
+
+    <div class="rail__foot">
+      <a class="rail__link" href="#/reference" data-nav><span class="dot dot--blue"></span>Reference Deck</a>
+      <a class="rail__link" href="#/certificate" data-nav><span class="dot dot--purple"></span>Certificate</a>
+      <button class="rail__link rail__link--btn" id="resetBtn"><span class="dot dot--red"></span>Reset progress</button>
+    </div>
+  </aside>
+
+  <div class="rail__scrim" id="railScrim"></div>
+
+  <main class="main" id="main">
+    <header class="topbar">
+      <button class="topbar__menu" id="railOpen" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="topbar__crumbs" id="crumbs"></div>
+      <div class="topbar__right">
+        <div class="xpmeter" id="xpmeter" title="Course progress">
+          <svg viewBox="0 0 36 36" class="xpmeter__ring" aria-hidden="true">
+            <circle class="xpmeter__track" cx="18" cy="18" r="15.5"></circle>
+            <circle class="xpmeter__fill" cx="18" cy="18" r="15.5"></circle>
+          </svg>
+          <span class="xpmeter__num" id="xpnum">0%</span>
+        </div>
+      </div>
+    </header>
+    <div class="view" id="view" tabindex="-1"></div>
+  </main>
+</div>
+
+<div id="toasts" class="toasts" aria-live="polite"></div>
+<div id="modalRoot" class="modal-root" hidden></div>
+
+<script src="assets/js/lib/pdf.js"></script>
+<script src="assets/js/state.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/data-course.js"></script>
+<script src="assets/js/data-quiz.js"></script>
+<script src="assets/js/sim-atem.js"></script>
+<script src="assets/js/sim-panel.js"></script>
+<script src="assets/js/sim-windows.js"></script>
+<script src="assets/js/sim-wiring.js"></script>
+<script src="assets/js/view-video.js"></script>
+<script src="assets/js/view-lesson.js"></script>
+<script src="assets/js/view-dashboard.js"></script>
+<script src="assets/js/view-certificate.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

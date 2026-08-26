@@ -1,0 +1,43 @@
+/* ============================================================
+   magicianed - layout corrections for simulation-width steps
+   Loaded last so it wins over the module sheets.
+   ============================================================ */
+
+/* --- simulation steps run full width with a horizontal step strip --- */
+.lesson__strip{
+  margin-bottom:24px; padding-bottom:18px; border-bottom:1px solid var(--line-soft);
+}
+.steplist--row{
+  flex-direction:row; flex-wrap:wrap; gap:5px; align-items:center;
+}
+.steplist--row .steplist__t{ margin:0 8px 0 0; }
+.steplist--row .steprow{
+  width:auto; padding:7px 12px; border:1px solid var(--line); border-radius:99px; font-size:12.5px;
+}
+.steplist--row .steprow.is-active{ border-color:var(--line-strong); }
+.steplist--row + div{ display:none; }   /* the vertical progress meter is redundant here */
+
+/* --- the task sidebar next to a simulation --- */
+.simwrap{ grid-template-columns:minmax(0,1fr) 272px; gap:20px; }
+.simwrap > *{ min-width:0; }
+
+/* the hardware panel and the rear panel are wide by nature:
+   drop their task list underneath so the board gets the whole column */
+.simwrap--stack{ grid-template-columns:minmax(0,1fr); }
+.simwrap--stack .simside{ position:static; }
+.simwrap--stack .simside .card{ max-width:100%; }
+.simwrap--stack .tasks{
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:7px;
+}
+
+/* --- stop the M/E block forcing the ATEM window wider than its track --- */
+.sw__lower{ grid-template-columns:minmax(0,1fr) 258px; }
+.me{ min-width:0; }
+.aw__body{ overflow-x:auto; }
+.tc{ min-width:0; }
+
+@media(max-width:1240px){
+  .simwrap{ grid-template-columns:minmax(0,1fr); }
+  .simside{ position:static; }
+  .simwrap .tasks{ display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:7px; }
+}
