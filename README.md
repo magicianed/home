@@ -77,3 +77,14 @@ assets/
 ## Accuracy note
 
 Hardware specifications follow the published Blackmagic Design tech specs for the ATEM Television Studio HD8 and HD8 ISO. The simulations are teaching tools built to behave like the real software — they are not affiliated with or endorsed by Blackmagic Design, and the certificate is a magicianed training credential, not an official Blackmagic certification.
+
+## Deploying a change
+
+GitHub Pages serves assets with `Cache-Control: max-age=600`, so a returning
+visitor can keep the old CSS/JS for ten minutes after a push. Every asset URL in
+`index.html` therefore carries a `?v=N` stamp — **bump that number whenever you
+change a file in `assets/`** and the new version is picked up immediately:
+
+```bash
+sed -i -E 's/\?v=[0-9]+"/?v=3"/g' index.html
+```
