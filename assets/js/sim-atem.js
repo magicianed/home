@@ -220,7 +220,7 @@
     },
 
     stream: {
-      title: 'Arm the stream and roll ISO',
+      title: 'Go live, roll record',
       tasks: [
         { id: 'a', label: 'Set the streaming platform to YouTube', hint: 'Open the Streaming palette.',
           check: function (s) { return s.stream.platform === 'YouTube'; } },
@@ -231,8 +231,6 @@
           check: function (s) { return s.stream.quality === '1080p 5 Mb/s'; } },
         { id: 'd', label: 'Select the exFAT SSD as the record disk', hint: 'Recording palette. One of the disks is NTFS - avoid it.',
           check: function (s) { return s.rec.disk === 'SHOW_SSD (exFAT)'; } },
-        { id: 'e', label: 'Enable ISO recording of all inputs', hint: 'The ISO switch in the Recording palette.',
-          check: function (s) { return s.rec.iso; } },
         { id: 'f', label: 'Start recording', hint: 'The record button.',
           check: function (s, m) { return m.recStarted >= 1; } },
         { id: 'g', label: 'Take the stream on air', hint: 'ON AIR in the Streaming palette.',
@@ -249,9 +247,9 @@
       tasks: [
         { id: '1', label: 'Holding slide on program', hint: 'Program row: SLIDES.',
           check: function (s) { return s.program === 7; } },
-        { id: '2', label: 'Arm recording with ISO on the exFAT disk and start it',
-          hint: 'Recording palette: disk, ISO, then record.',
-          check: function (s, m) { return s.rec.iso && s.rec.disk === 'SHOW_SSD (exFAT)' && m.recStarted >= 1; } },
+        { id: '2', label: 'Select the exFAT disk and start recording',
+          hint: 'Recording palette: disk, then record.',
+          check: function (s, m) { return s.rec.disk === 'SHOW_SSD (exFAT)' && m.recStarted >= 1; } },
         { id: '3', label: 'Set the stream to YouTube with a key and take it on air',
           hint: 'Streaming palette.',
           check: function (s, m) { return s.stream.platform === 'YouTube' && s.stream.key.length >= 8 && m.streamStarted >= 1; } },
@@ -313,7 +311,7 @@
       el('div', { class: 'aw__name', text: 'ATEM Software Control' }),
       el('div', { class: 'aw__dev' }, [
         el('span', { class: 'aw__devdot' }),
-        el('span', { text: 'ATEM Television Studio HD8 ISO' })
+        el('span', { text: 'ATEM Television Studio HD8' })
       ])
     ]);
     var tabs = el('div', { class: 'aw__tabs' });
@@ -853,10 +851,9 @@
               return sel;
             })()
           ]),
-          toggleRow('ISO record all inputs', s.rec.iso, function () { s.rec.iso = !s.rec.iso; }, 'var(--iso)'),
           el('div', { class: 'prow' }, [
             el('span', { class: 'plbl', text: 'Remaining' }),
-            el('span', { class: 'pval mono', text: s.rec.disk ? (s.rec.iso ? '01:12:00' : '06:40:00') : '--:--:--' })
+            el('span', { class: 'pval mono', text: s.rec.disk ? '06:40:00' : '--:--:--' })
           ]),
           el('button', {
             class: 'recbtn' + (s.rec.recording ? ' is-rec' : ''),
@@ -864,7 +861,7 @@
             onclick: function () {
               if (!s.rec.recording) {
                 if (!s.rec.disk) { w.UI.toast('Select a record disk first', 'bad'); Sound.bad(); return; }
-                s.rec.recording = true; m.recStarted++; Sound.good(); log('RECORD START' + (s.rec.iso ? ' (ISO)' : ''));
+                s.rec.recording = true; m.recStarted++; Sound.good(); log('RECORD START');
               } else {
                 s.rec.recording = false;
                 if (s.ftb && !s.stream.live && m.shutdownStage === 1) { m.cleanShutdown = true; w.UI.toast('Clean shutdown - copy the media before you unplug it', 'ok'); }
@@ -873,7 +870,7 @@
               after();
             }
           }),
-          el('p', { class: 'phint', text: s.rec.iso ? 'ISO writes 8 input files, separate WAVs, the program mix and a DaVinci Resolve .drp project.' : 'Program only: one H.264 .mp4 at the streaming quality setting.' })
+          el('p', { class: 'phint', text: 'The program mix, recorded as one H.264 .mp4 at the streaming quality setting.' })
         ];
       }));
 

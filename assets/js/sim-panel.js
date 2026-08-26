@@ -11,47 +11,40 @@
      REAR PANEL
      ============================================================ */
   var REAR = [
-    { id: 'power', label: 'POWER', accent: 'var(--pgm)', span: 2,
-      ports: [{ t: 'iec', n: 'AC' }, { t: 'dc', n: '12V' }],
-      title: 'Power - IEC mains + 12V DC',
-      body: 'Two independent power inputs. Wire both and you have redundancy: mains can drop without the switcher rebooting. There is no power switch - the unit boots as soon as it has power.' },
-    { id: 'ref', label: 'REF / TC', accent: 'var(--audio)', span: 2,
-      ports: [{ t: 'bnc', n: 'REF IN' }, { t: 'bnc', n: 'REF OUT' }, { t: 'bnc', n: 'TC IN' }, { t: 'bnc', n: 'TC OUT' }],
-      title: 'Reference and Timecode',
-      body: 'Reference In accepts tri-level sync or black burst to genlock the switcher to the rest of the facility. Timecode In/Out keeps ISO recordings aligned with everything else on site.' },
-    { id: 'madi', label: 'MADI', accent: 'var(--audio)', span: 1,
-      ports: [{ t: 'bnc', n: 'IN' }, { t: 'bnc', n: 'OUT' }],
-      title: 'MADI digital audio',
-      body: '32 channels in on one BNC, 64 out. This is how you tie a full audio console into the switcher on a single coax instead of a loom of XLRs.' },
-    { id: 'usb', label: 'USB-C', accent: 'var(--iso)', span: 1,
-      ports: [{ t: 'usb', n: '1' }, { t: 'usb', n: '2' }],
-      title: 'USB-C x2',
-      body: 'Record straight to an external SSD, output the program as a USB webcam, connect directly to a computer for ATEM Software Control, or push a firmware update. Format record media as exFAT.' },
-    { id: 'net', label: 'ETHERNET', accent: 'var(--info)', span: 2,
-      ports: [{ t: 'rj', n: '1' }, { t: 'rj', n: '2' }, { t: 'rj', n: '3' }, { t: 'rj', n: '4' }],
-      title: 'Ethernet - built-in 4-port switch',
-      body: 'A gigabit network switch inside the unit. Control computer, house network, remote panel and the internet connection for streaming all land here. This is the main control path for ATEM Software Control.' },
-    { id: 'ctrl', label: 'REMOTE / TALKBACK', accent: 'var(--brand)', span: 2,
-      ports: [{ t: 'rj', n: 'RS-422' }, { t: 'rj', n: 'TALK' }, { t: 'xlr5', n: 'HEADSET' }],
-      title: 'Remote and Talkback',
-      body: 'RJ12 remote gives RS-422 for automation systems. The 5-pin XLR takes a broadcast headset and puts you on a party line with camera operators over SDI, with mix-minus so nobody hears themselves.' },
     { id: 'sdiin', label: 'SDI IN 1-8', accent: 'var(--pvw)', span: 4,
       ports: [1, 2, 3, 4, 5, 6, 7, 8].map(function (n) { return { t: 'bnc', n: String(n) }; }),
       title: 'SDI Inputs 1-8',
-      body: 'Your camera and playback sources. Auto-detects 1.5G and 3G-SDI level A or B, each carrying 4 channels of embedded audio into the mixer. Every source must match the switcher video standard exactly.' },
+      body: 'Cameras and playback. Auto-detects 1.5G and 3G-SDI, with four channels of embedded audio each. Every source must match the switcher video standard exactly.' },
     { id: 'sdiout', label: 'SDI OUT 1-8', accent: 'var(--key)', span: 4,
       ports: [1, 2, 3, 4, 5, 6, 7, 8].map(function (n) { return { t: 'bnc', n: String(n) }; }),
       title: 'SDI Outputs 1-8 - camera returns',
-      body: 'One return per camera. Each carries the program picture back to the operator viewfinder, plus tally and camera control on the same coax. Match the numbering: camera 3 into In 3, Out 3 back to camera 3.' },
+      body: 'One return per camera, carrying program, tally and camera control back down the same coax. Camera 3 into IN 3, OUT 3 back to camera 3.' },
     { id: 'pgm', label: 'PGM / AUX / MV', accent: 'var(--pgm)', span: 2,
       ports: [{ t: 'bnc', n: 'PGM' }, { t: 'bnc', n: 'AUX 1' }, { t: 'bnc', n: 'AUX 2' }, { t: 'bnc', n: 'MV' }, { t: 'hdmi', n: 'MV' }],
-      title: 'Program, Aux and Multiview outputs',
-      body: 'Program is the clean show output. The two Aux outputs are independently routable - stage screens, a clean feed, a private monitor. Multiview appears on both an SDI and an HDMI connector, configurable 4, 7, 10, 13 or 16 up.' },
+      title: 'Program, Aux and Multiview',
+      body: 'Program is the clean show output. The two aux outputs are independently routable - a stage screen, a clean feed. Multiview appears on both SDI and HDMI.' },
     { id: 'audio', label: 'ANALOG AUDIO', accent: 'var(--audio)', span: 2,
-      ports: [{ t: 'xlr', n: 'IN 1' }, { t: 'xlr', n: 'IN 2' }, { t: 'rca', n: 'L' }, { t: 'rca', n: 'R' }, { t: 'jack', n: 'OUT 1-4' }],
-      title: 'Analog audio in and out',
-      body: 'Two balanced XLR inputs for microphones or line-level feeds, RCA stereo for consumer sources like a laptop, and four balanced 1/4 inch jack outputs for monitoring or a PA send.' }
+      ports: [{ t: 'xlr', n: 'IN 1' }, { t: 'xlr', n: 'IN 2' }, { t: 'rca', n: 'L' }, { t: 'rca', n: 'R' }, { t: 'jack', n: 'OUT' }],
+      title: 'Analog audio',
+      body: 'Two balanced XLR inputs for microphones or line level, RCA stereo for a laptop, and balanced jack outputs for monitoring or a PA send.' },
+    { id: 'net', label: 'ETHERNET', accent: 'var(--info)', span: 1,
+      ports: [{ t: 'rj', n: '1' }, { t: 'rj', n: '2' }, { t: 'rj', n: '3' }, { t: 'rj', n: '4' }],
+      title: 'Ethernet x4',
+      body: 'A gigabit network switch built into the box. Control computer, house network and the internet connection for streaming all land here.' },
+    { id: 'usb', label: 'USB-C', accent: 'var(--iso)', span: 1,
+      ports: [{ t: 'usb', n: '1' }, { t: 'usb', n: '2' }],
+      title: 'USB-C x2',
+      body: 'Record the show to an external SSD, output as a USB webcam, or connect a computer directly. Format record media as exFAT.' },
+    { id: 'talk', label: 'TALKBACK', accent: 'var(--brand)', span: 1,
+      ports: [{ t: 'xlr5', n: 'HEADSET' }],
+      title: 'Talkback headset',
+      body: 'A broadcast headset on the 5-pin XLR puts you on a party line with your camera operators over SDI, with mix-minus so nobody hears themselves.' },
+    { id: 'power', label: 'POWER', accent: 'var(--ink-2)', span: 1,
+      ports: [{ t: 'iec', n: 'AC' }, { t: 'dc', n: '12V' }],
+      title: 'Power - mains + 12V DC',
+      body: 'Two independent inputs. Wire both and mains can drop without the switcher rebooting. There is no power switch - it boots when it has power.' }
   ];
+
 
   function mountRear(host, opts) {
     opts = opts || {};
@@ -61,7 +54,7 @@
     var board = el('div', { class: 'rear' });
     var info = el('div', { class: 'rearinfo' }, [
       el('div', { class: 'rearinfo__t', text: 'Click a connector group' }),
-      el('p', { class: 'rearinfo__b', text: 'Every port on the back of the ATEM Television Studio HD8 ISO. Identify all ten groups to complete this step.' })
+      el('p', { class: 'rearinfo__b', text: 'Every socket you will actually use. Identify all eight to clear the level.' })
     ]);
     var counter = el('div', { class: 'rearcount' });
 

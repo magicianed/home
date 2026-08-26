@@ -39,11 +39,11 @@
         el('span', { class: 'eyebrow', text: 'Certificate' }),
         el('h1', { class: 'hero__title', text: 'Not yet.' }),
         el('p', { class: 'lede', style: { marginBottom: '26px' },
-          text: 'The Blackmagic ATEM Television Studio HD8 operator certificate is issued when every module is complete - including the live simulation and the written final. You have ' + remaining + ' step' + (remaining === 1 ? '' : 's') + ' to go.' }),
+          text: 'The certificate is issued when all thirteen levels are cleared, including the live show and the written final. ' + remaining + ' step' + (remaining === 1 ? '' : 's') + ' to go.' }),
         el('div', { class: 'certlock' }, [
           el('div', { class: 'certlock__ring' }, [el('span', { class: 'mono', text: w.COURSE.pct() + '%' })]),
           el('div', { class: 'grow' }, [
-            el('div', { style: { fontSize: '15px', fontWeight: '600' }, text: 'Next: Module ' + next.mod.n + ' · ' + (next.mod.steps[next.step].title || 'Step ' + (next.step + 1)) }),
+            el('div', { style: { fontSize: '15px', fontWeight: '600' }, text: 'Next: Level ' + next.mod.n + ' · ' + (next.mod.steps[next.step].title || 'Step ' + (next.step + 1)) }),
             el('div', { class: 'muted', style: { fontSize: '13px', marginTop: '3px' }, text: next.mod.title })
           ]),
           el('button', { class: 'btn btn--primary', text: 'Continue →', onclick: function () { w.go('#/m/' + next.mod.id + '/' + next.step); } })
@@ -61,7 +61,7 @@
     wrap.appendChild(el('div', { style: { marginBottom: '26px' } }, [
       el('span', { class: 'eyebrow', text: 'Certified' }),
       el('h1', { class: 'hero__title', text: 'You can run the HD8.' }),
-      el('p', { class: 'lede', text: 'Thirteen modules, six video checkpoints, seven simulations and a written final. Download the PDF below - it is generated on your machine, nothing is uploaded.' })
+      el('p', { class: 'lede', text: 'Thirteen levels, twelve Ponder scenes, thirteen simulations and a written final. The PDF is generated on your machine - nothing is uploaded.' })
     ]));
 
     /* ---- the certificate ---- */
@@ -85,9 +85,9 @@
           el('div', { class: 'cert__meta' }, [
             metaCell('Issued', fmtDate(cert.issuedAt)),
             metaCell('Credential ID', cert.id),
-            metaCell('Modules', '13 of 13'),
+            metaCell('Levels', '13 of 13'),
             metaCell('Written final', finalPct + '%'),
-            metaCell('Course average', score + '%')
+            metaCell('XP earned', String(w.State.xp()))
           ]),
           el('div', { class: 'cert__sig' }, [
             el('div', { class: 'cert__sigline' }),
@@ -176,18 +176,18 @@
     d.text('BLACKMAGIC ATEM', W / 2, H - 332, 25, WHITE, { align: 'c', bold: true, track: 60 });
     d.text('TELEVISION STUDIO HD8', W / 2, H - 366, 25, WHITE, { align: 'c', bold: true, track: 60 });
 
-    d.text('Rack and power · SDI wiring · video standards · ATEM Setup · Software Control · live switching',
+    d.text('Signal flow · rear panel · SDI wiring · video standards · ATEM Setup · Software Control · live switching',
       W / 2, H - 400, 9, DIM, { align: 'c' });
-    d.text('transitions and keying · media pool · Fairlight audio · camera control · streaming · ISO recording · the hardware panel',
+    d.text('transitions and keying · media pool · audio mixing · camera control · streaming · recording · the hardware panel',
       W / 2, H - 414, 9, DIM, { align: 'c' });
 
     /* meta row */
     var cells = [
       ['ISSUED', fmtDate(cert.issuedAt)],
       ['CREDENTIAL ID', cert.id],
-      ['MODULES', '13 of 13'],
+      ['LEVELS', '13 of 13'],
       ['WRITTEN FINAL', finalPct + '%'],
-      ['COURSE AVERAGE', score + '%']
+      ['XP EARNED', String(w.State.xp())]
     ];
     var mLeft = 74, mRight = W - 74;
     var span = (mRight - mLeft) / cells.length;

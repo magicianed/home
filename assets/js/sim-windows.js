@@ -27,8 +27,7 @@
     ],
     'C:\\Shows\\Recordings': [
       { n: 'ATEM_2026-08-25_PGM.mp4', k: 'video', size: '4.2 GB', d: 'Today' },
-      { n: 'ATEM_2026-08-25_ISO1.mp4', k: 'video', size: '3.8 GB', d: 'Today' },
-      { n: 'ATEM_2026-08-25.drp', k: 'drp', size: '1.1 MB', d: 'Today' }
+      { n: 'ATEM_2026-08-25_PGM_backup.mp4', k: 'video', size: '4.2 GB', d: 'Today' }
     ]
   };
 
@@ -48,7 +47,7 @@
           check: function (c) { return c.installed; } },
         { id: 'e', label: 'Launch ATEM Software Control', hint: 'Its icon appears on the desktop once installed.',
           check: function (c) { return c.opened.atem; } },
-        { id: 'f', label: 'Connect to the ATEM Television Studio HD8 ISO', hint: 'Pick it from the device list.',
+        { id: 'f', label: 'Connect to the ATEM Television Studio HD8', hint: 'Pick it from the device list.',
           check: function (c) { return c.connected; } }
       ]
     },
@@ -87,7 +86,7 @@
       tasks: [
         { id: 'a', label: 'Open ATEM Setup', hint: 'Desktop icon or taskbar.',
           check: function (c) { return c.opened.setup; } },
-        { id: 'b', label: 'Select the ATEM Television Studio HD8 ISO', hint: 'The device list on the left.',
+        { id: 'b', label: 'Select the ATEM Television Studio HD8', hint: 'The device list on the left.',
           check: function (c) { return c.setup.selected; } },
         { id: 'c', label: 'Rename it to Studio A HD8', hint: 'The Name field on the Setup tab.',
           check: function (c) { return c.setup.name === 'Studio A HD8'; } },
@@ -128,7 +127,7 @@
       connected: !!mission.connected,
       installStep: 0,
       atem: null,
-      setup: { selected: false, name: 'ATEM Television Studio HD8 ISO', standard: '1080i59.94', dhcp: true, ip: '192.168.1.55', mask: '255.255.255.0', gw: '192.168.1.1', mv: '4 up', saved: false, tab: 'setup' },
+      setup: { selected: false, name: 'ATEM Television Studio HD8', standard: '1080i59.94', dhcp: true, ip: '192.168.1.55', mask: '255.255.255.0', gw: '192.168.1.1', mv: '4 up', saved: false, tab: 'setup' },
       zTop: 10
     };
     var doneT = {}, finished = false;
@@ -328,15 +327,15 @@
           el('p', { class: 'devsel__b', text: 'ATEM Software Control found the following switchers on the network.' })
         ]);
         [
-          { n: 'ATEM Television Studio HD8 ISO', ip: '192.168.10.240', ok: true },
+          { n: 'ATEM Television Studio HD8', ip: '192.168.10.240', ok: true },
           { n: 'ATEM Mini Pro (Studio B)', ip: '192.168.10.61', ok: true },
-          { n: 'ATEM Television Studio HD8', ip: '192.168.10.9', ok: false, note: 'firmware 9.1 - update required' }
+          { n: 'ATEM Mini Extreme (Studio C)', ip: '192.168.10.9', ok: false, note: 'firmware 9.1 - update required' }
         ].forEach(function (d) {
           list.appendChild(el('button', {
             class: 'devrow' + (d.ok ? '' : ' is-bad'),
             onclick: function () {
               if (!d.ok) { Sound.bad(); w.UI.toast('Firmware mismatch - open ATEM Setup and update this switcher first.', 'bad', 3600); return; }
-              if (d.n.indexOf('HD8 ISO') < 0) { Sound.bad(); w.UI.toast('That is a different switcher. Connect to the HD8 ISO.', 'bad'); return; }
+              if (d.n.indexOf('Television Studio HD8') < 0) { Sound.bad(); w.UI.toast('That is a different switcher. Connect to the HD8 ISO.', 'bad'); return; }
               c.connected = true; Sound.good(); w.UI.toast('Connected to ' + d.n, 'ok');
               check(); rebuild('atem');
             }
@@ -365,7 +364,7 @@
       clear(body);
       var st = c.setup;
       var side = el('div', { class: 'bs__side' }, [el('div', { class: 'bs__sh', text: 'ATEM SWITCHERS' })]);
-      [{ n: 'ATEM Television Studio HD8 ISO', ip: '192.168.1.55' }].forEach(function (d) {
+      [{ n: 'ATEM Television Studio HD8', ip: '192.168.1.55' }].forEach(function (d) {
         side.appendChild(el('button', {
           class: 'bs__dev' + (st.selected ? ' is-on' : ''),
           onclick: function () { st.selected = true; Sound.tap(); check(); rebuild('setup'); }

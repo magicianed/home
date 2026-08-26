@@ -33,8 +33,6 @@
     { id: 'eth-4', g: 'CONTROL', l: 'ETH 4', t: 'rj' },
     { id: 'usb-1', g: 'CONTROL', l: 'USB-C 1', t: 'usb' },
     { id: 'usb-2', g: 'CONTROL', l: 'USB-C 2', t: 'usb' },
-    { id: 'ref-in', g: 'SYNC', l: 'REF IN', t: 'bnc' },
-    { id: 'tc-in', g: 'SYNC', l: 'TC IN', t: 'bnc' },
     { id: 'ac', g: 'POWER', l: 'AC IN', t: 'iec' },
     { id: 'dc', g: 'POWER', l: '12V DC', t: 'dc' }
   ];

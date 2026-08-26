@@ -19,8 +19,20 @@
     quizzes: {},      // "m3" -> {best, attempts, passed}
     sims: {},         // "wiring" -> {best, runs, passed}
     seconds: 0,       // time on task
+    xp: 0,
     certificate: null // {id, issuedAt, name}
   };
+
+  var LEVELS = [
+    { at: 0,    name: 'Runner' },
+    { at: 150,  name: 'Cable Basher' },
+    { at: 350,  name: 'Trainee Op' },
+    { at: 600,  name: 'Vision Op' },
+    { at: 900,  name: 'Switcher Op' },
+    { at: 1250, name: 'Vision Mixer' },
+    { at: 1650, name: 'Director' },
+    { at: 2100, name: 'Showrunner' }
+  ];
 
   var data = load();
   var dirty = false;
@@ -151,6 +163,31 @@
       data.certificate = { id: id, issuedAt: Date.now(), name: State.fullName() };
       save(); State.emit('certificate');
       return data.certificate;
+    },
+
+    /* ---------- xp & levels ---------- */
+    xp: function () { return data.xp || 0; },
+    levelAt: function (xp) {
+      var i = 0;
+      for (var k = 0; k < LEVELS.length; k++) if (xp >= LEVELS[k].at) i = k;
+      var next = LEVELS[i + 1];
+      return {
+        n: i + 1,
+        name: LEVELS[i].name,
+        into: xp - LEVELS[i].at,
+        need: next ? next.at - LEVELS[i].at : 0,
+        pct: next ? (xp - LEVELS[i].at) / (next.at - LEVELS[i].at) : 1,
+        max: !next
+      };
+    },
+    level: function () { return State.levelAt(data.xp || 0); },
+    /* returns the new level object when the award crossed a threshold */
+    addXP: function (n) {
+      var before = State.level().n;
+      data.xp = (data.xp || 0) + n;
+      save(); State.emit('xp');
+      var after = State.level();
+      return after.n > before ? after : null;
     },
 
     /* ---------- time ---------- */

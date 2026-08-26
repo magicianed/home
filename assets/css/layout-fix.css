@@ -41,3 +41,62 @@
   .simside{ position:static; }
   .simwrap .tasks{ display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:7px; }
 }
+
+/* ============================================================
+   level view - game chrome
+   ============================================================ */
+.lvhead{ display:flex; align-items:flex-start; justify-content:space-between; gap:20px; margin-bottom:20px; flex-wrap:wrap; }
+.lvhead__l{ display:flex; align-items:flex-start; gap:16px; }
+.lvhead__n{
+  width:44px; height:44px; border-radius:var(--r-md); flex:none;
+  display:grid; place-items:center; font-size:16px; font-weight:800;
+  background:var(--surface-1); border:1px solid var(--line-strong);
+}
+.lvhead__t{ font-size:clamp(23px,3vw,32px); font-weight:700; letter-spacing:-.028em; line-height:1.08; }
+.lvhead__b{ font-size:14.5px; color:var(--ink-3); margin-top:5px; max-width:56ch; }
+
+.lvstrip{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:24px; }
+.lvpip{
+  display:flex; align-items:center; gap:9px; padding:8px 14px 8px 10px;
+  border:1px solid var(--line); border-radius:99px; background:var(--surface-1);
+  font-size:13px; color:var(--ink-3);
+  transition:all var(--t-fast) var(--e-out);
+}
+.lvpip:hover{ border-color:var(--line-strong); color:var(--ink-2); }
+.lvpip__i{
+  width:20px; height:20px; border-radius:50%; flex:none; display:grid; place-items:center;
+  font-size:9.5px; background:var(--surface-3); color:var(--ink-4);
+  transition:all var(--t-med) var(--e-snap);
+}
+.lvpip.is-done{ color:var(--ink-2); border-color:#17573a; }
+.lvpip.is-done .lvpip__i{ background:var(--pvw); color:#000; font-weight:800; }
+.lvpip.is-active{ background:var(--surface-3); color:var(--ink); font-weight:600; border-color:var(--line-strong); }
+.lvpip.is-active .lvpip__i{ background:var(--brand); color:#000; }
+
+.lvintro{ font-size:15px; color:var(--ink-2); max-width:70ch; margin-bottom:18px; line-height:1.55; }
+
+.lvup{ text-align:center; padding:8px 0 4px; }
+.lvup__n{
+  width:76px; height:76px; margin:0 auto 16px; border-radius:50%;
+  display:grid; place-items:center; font-size:30px; font-weight:800;
+  background:var(--brand-dim); border:2px solid var(--brand); color:#cfa8ff;
+  animation:lvpop .55s var(--e-snap) both;
+}
+@keyframes lvpop{ from{ transform:scale(.4); opacity:0; } to{ transform:none; opacity:1; } }
+.lvup__name{ font-size:22px; font-weight:700; letter-spacing:-.02em; margin-bottom:8px; }
+
+.streak{
+  font-size:11.5px; font-weight:700; color:var(--audio);
+  animation:toastIn .35s var(--e-snap) both; white-space:nowrap;
+}
+
+/* level + xp in the top bar */
+.lvmeter{ display:flex; align-items:center; gap:10px; }
+.lvmeter__b{
+  display:flex; flex-direction:column; align-items:flex-end; gap:4px; min-width:104px;
+}
+.lvmeter__n{ font-size:11px; font-weight:700; letter-spacing:.06em; color:var(--ink-2); white-space:nowrap; }
+.lvmeter__n b{ color:var(--brand); }
+.lvmeter__bar{ width:104px; height:4px; background:var(--surface-3); border-radius:99px; overflow:hidden; }
+.lvmeter__bar i{ display:block; height:100%; background:var(--brand); border-radius:99px; transition:width .6s var(--e-out); }
+@media(max-width:700px){ .lvmeter__b{ display:none; } }

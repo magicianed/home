@@ -1,90 +1,80 @@
 # magicianed
 
-An interactive course that teaches the **Blackmagic ATEM Television Studio HD8 / HD8 ISO** from rack rails to a finished DaVinci Resolve timeline.
+A game that teaches you the **Blackmagic ATEM Television Studio HD8**.
 
-Static site. No build step, no dependencies, no backend. Drop it on GitHub Pages and it runs.
+Static site — no build step, no dependencies, no backend. Runs on GitHub Pages as-is.
+
+**Live:** https://magicianed.github.io/home/
 
 ---
 
-## What is in it
+## How it teaches
 
-Thirteen modules, each mixing several teaching methods:
+Thirteen levels. Every one is the same two beats:
 
-| # | Module | How it teaches |
-|---|--------|----------------|
-| 01 | What a switcher actually does | Reading + **YouTube video with six enforced checkpoints** + quiz |
-| 02 | Rack, power & the rear panel | Reading + clickable rear-panel explorer + quiz |
-| 03 | Wiring the studio | **Cable-patching minigame**, two levels (6 and 18 patches) |
-| 04 | First boot: video standard & network | **ATEM Setup utility simulation** |
-| 05 | Windows setup & Software Control | **Windows desktop simulation** — File Explorer, installer, device picker |
-| 06 | Switching live | **ATEM Software Control simulation** — program/preview, cut, auto, fader bar |
-| 07 | Transitions, keyers & DVE | Simulation — wipes, chroma key sampling, downstream keys |
-| 08 | Media pool & importing files | **Drag a PNG from File Explorer into the media pool**, then on air |
-| 09 | Audio: the Fairlight mixer | Simulation — channel strips, ON/AFV/OFF, EQ, dynamics, master |
-| 10 | Camera control & tally | Simulation — match a mis-exposed camera from the switcher |
-| 11 | Streaming, recording & ISO export | Simulation — RTMP, disk format, ISO, clean shutdown order |
-| 12 | The hardware panel | **1RU front panel simulation** — crosspoints, shift, fader, joystick, keypad, macros |
-| 13 | Final exam | Timed live-show simulation + 24-question written final |
+**PONDER** — an animated isometric scene plays out the idea, one short caption at a time. You can scrub, pause and replay any beat. Borrowed wholesale from Create mod's Ponder, because it works.
 
-Finish everything and you get a **downloadable PDF certificate** with your name on it, generated entirely in the browser.
+**PLAY** — you do the thing yourself in a working simulation. Tasks are checked against real switcher state, not against clicks.
+
+There is no reading step. Nothing is explained in a paragraph that could be shown in a scene or learned by doing it wrong once.
+
+| # | Level | Ponder | Play |
+|---|-------|--------|------|
+| 01 | Meet the HD8 | One picture leaves | The real walkthrough video, with five checkpoints that block until you answer |
+| 02 | The Back Panel | The back of the box | Identify all eight connector groups |
+| 03 | Wire It Up | Every camera is a loop | Cable-patching minigame, two levels |
+| 04 | Power On | One format, or nothing | ATEM Setup simulation |
+| 05 | The Software | Four tabs, and that is it | Windows desktop: installer, device picker, connect |
+| 06 | Switching Live | Three ways to take | Program/preview, cut, auto, fader bar |
+| 07 | Keys & Transitions | What sits on top of what | Wipe, chroma key, downstream key |
+| 08 | Graphics | From your drive to on air | Drag a PNG out of File Explorer into the media pool |
+| 09 | Audio | ON, AFV, OFF | Mix the show on the channel strips |
+| 10 | Cameras & Tally | Make them the same room | Match a mis-exposed camera |
+| 11 | Stream & Record | Out to the world | RTMP, bitrate, disk, clean shutdown |
+| 12 | The Panel | Hands on the box | Playable front panel — 13 drills |
+| 13 | Run The Show | — | Eleven beats in order, then the written final |
+
+## Game layer
+
+XP for every level cleared, eight ranks from **Runner** to **Showrunner**, streak tracking in the exam, and a downloadable PDF certificate with your name on it — generated in the browser by a hand-rolled vector PDF writer.
 
 ## Design
 
-Pure black and white, no gradients anywhere. Colour is used only as a signal, the same way it is on the switcher itself:
-
-- **red** — program / on air
-- **green** — preview / correct
-- **blue** — information, video, transitions
-- **purple** — magicianed, progress, hardware
-- **amber** — audio, warnings
-- **cyan** — keyers, media
-- **pink** — recording, ISO, export
-
-## Running it locally
-
-Any static server works. For example:
-
-```bash
-npx serve .
-```
-
-Then open the address it prints. Opening `index.html` from the filesystem also works, but the YouTube embed behaves better over http.
+Pure black and white, no gradients. Colour is a signal, the same way it is on the switcher:
+red = program, green = preview, blue = information, purple = magicianed, amber = audio, cyan = keys/media, pink = stream/record.
 
 ## Progress
 
-Everything is stored in `localStorage` under `magicianed.atem.hd8.v1` — name, completed steps, checkpoint answers, quiz scores, simulation results and the issued certificate. Nothing is uploaded anywhere. "Reset progress" in the sidebar wipes it.
+Everything lives in `localStorage` under `magicianed.atem.hd8.v1`. Nothing is uploaded. "Reset progress" in the sidebar wipes it.
 
 ## Layout
 
 ```
 index.html
 assets/
-  css/    base, app, four simulation sheets, certificate, layout fixes
+  css/   base · app · ponder · four simulation sheets · certificate · layout-fix
   js/
-    state.js          persistence
-    ui.js             dom helpers, toasts, modals, sound, drag
-    data-course.js    the curriculum, video checkpoints
-    data-quiz.js      question banks
-    sim-atem.js       ATEM Software Control recreation
-    sim-panel.js      rear panel explorer + HD8 front panel
-    sim-windows.js    Windows desktop, File Explorer, installer, ATEM Setup
-    sim-wiring.js     cable patching minigame
-    view-*.js         video, lesson, dashboard, certificate
-    lib/pdf.js        dependency-free vector PDF writer
-    app.js            router + shell
+    ponder.js        isometric scene engine
+    data-scenes.js   the twelve scenes
+    data-course.js   the thirteen levels
+    data-quiz.js     final exam bank
+    sim-atem.js      ATEM Software Control recreation
+    sim-panel.js     rear panel explorer + HD8 front panel
+    sim-windows.js   Windows desktop, File Explorer, installer, ATEM Setup
+    sim-wiring.js    cable minigame
+    view-*.js        video · lesson · dashboard · certificate
+    lib/pdf.js       dependency-free vector PDF writer
+    state.js  ui.js  app.js
+```
+
+## Deploying a change
+
+GitHub Pages serves assets with `Cache-Control: max-age=600`, so a returning visitor can keep the old CSS/JS for ten minutes after a push. Every asset URL in `index.html` carries a `?v=N` stamp — **bump it whenever you change anything in `assets/`**:
+
+```bash
+sed -i -E 's/\?v=[0-9]+"/?v=4"/g' index.html
 ```
 
 ## Accuracy note
 
-Hardware specifications follow the published Blackmagic Design tech specs for the ATEM Television Studio HD8 and HD8 ISO. The simulations are teaching tools built to behave like the real software — they are not affiliated with or endorsed by Blackmagic Design, and the certificate is a magicianed training credential, not an official Blackmagic certification.
-
-## Deploying a change
-
-GitHub Pages serves assets with `Cache-Control: max-age=600`, so a returning
-visitor can keep the old CSS/JS for ten minutes after a push. Every asset URL in
-`index.html` therefore carries a `?v=N` stamp — **bump that number whenever you
-change a file in `assets/`** and the new version is picked up immediately:
-
-```bash
-sed -i -E 's/\?v=[0-9]+"/?v=3"/g' index.html
-```
+Specifications follow Blackmagic Design's published tech specs for the ATEM Television Studio HD8. The simulations are teaching tools built to behave like the real software; they are not affiliated with or endorsed by Blackmagic Design, and the certificate is a magicianed training credential, not an official Blackmagic certification.

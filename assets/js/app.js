@@ -124,12 +124,27 @@
       railNav.appendChild(b);
     });
 
-    /* xp ring */
+    /* course ring */
     var pct = w.COURSE.pct();
     var fill = qs('.xpmeter__fill');
     if (fill) fill.style.strokeDashoffset = String(97.4 * (1 - pct / 100));
     var num = qs('#xpnum');
     if (num) num.textContent = pct + '%';
+
+    /* level + xp meter */
+    var lv = w.State.level();
+    var host = qs('#lvmeter');
+    if (!host) {
+      host = el('div', { class: 'lvmeter', id: 'lvmeter' });
+      var right = qs('.topbar__right');
+      right.insertBefore(host, right.firstChild);
+    }
+    clear(host);
+    host.appendChild(el('div', { class: 'lvmeter__b' }, [
+      el('div', { class: 'lvmeter__n', html: '<b>LVL ' + lv.n + '</b> · ' + w.UI.esc(lv.name) }),
+      el('div', { class: 'lvmeter__bar' }, [el('i', { style: { width: Math.round(lv.pct * 100) + '%' } })])
+    ]));
+    host.title = w.State.xp() + ' XP' + (lv.max ? ' · max level' : ' · ' + (lv.need - lv.into) + ' XP to level ' + (lv.n + 1));
   }
   w.refreshChrome = refreshChrome;
 
