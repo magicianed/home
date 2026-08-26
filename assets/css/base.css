@@ -63,6 +63,12 @@
 }
 
 *,*::before,*::after{ box-sizing:border-box; }
+
+/* The hidden attribute must always win. Any class that sets display
+   (.app, .modal-root) otherwise beats the UA [hidden] rule and leaves an
+   invisible full-screen layer swallowing every click. */
+[hidden]{ display:none !important; }
+
 html,body{ height:100%; }
 body{
   margin:0;
@@ -206,6 +212,7 @@ ul,ol{ padding:0; list-style:none; }
 
 /* ---------- modal ---------- */
 .modal-root{ position:fixed; inset:0; z-index:8500; display:grid; place-items:center; }
+.modal-root:empty{ display:none; }   /* belt and braces - never veil an empty overlay */
 .modal-root::before{
   content:""; position:absolute; inset:0; background:rgba(0,0,0,.76);
   backdrop-filter:blur(3px); animation:fade .25s var(--e-out) both;

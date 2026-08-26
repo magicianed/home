@@ -37,7 +37,10 @@
 }
 .dicon__l{ font-size:10px; color:#dfdfe6; text-align:center; line-height:1.25; text-shadow:0 1px 3px rgba(0,0,0,.9); }
 
-.win__windows{ position:absolute; inset:0 0 44px 0; z-index:5; }
+/* the window layer spans the whole desktop, so it must let clicks through
+   to the icons underneath - only the windows themselves take input */
+.win__windows{ position:absolute; inset:0 0 44px 0; z-index:5; pointer-events:none; }
+.win__windows > *{ pointer-events:auto; }
 
 .w32{
   position:absolute; display:flex; flex-direction:column; overflow:hidden;
