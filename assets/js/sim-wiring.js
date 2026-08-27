@@ -59,8 +59,8 @@
       ]
     },
     2: {
-      title: 'A full facility',
-      brief: 'Seventeen patches. Three cameras with returns, outputs, audio, network, recording, talkback and redundant power.',
+      title: 'The whole studio',
+      brief: 'Eighteen patches. Three cameras and their return cables, every output, the sound, the network, the recording drive, the headset and both power leads.',
       patches: [
         { id: 'c1', dev: 'Camera 1', end: 'SDI OUT', t: 'bnc', accept: ['sdi-in-1'], col: 'var(--pvw)', why: 'Camera 1 into Input 1.' },
         { id: 'c2', dev: 'Camera 2', end: 'SDI OUT', t: 'bnc', accept: ['sdi-in-2'], col: 'var(--pvw)', why: 'Camera 2 into Input 2.' },

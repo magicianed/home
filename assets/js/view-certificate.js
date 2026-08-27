@@ -61,7 +61,7 @@
     wrap.appendChild(el('div', { style: { marginBottom: '26px' } }, [
       el('span', { class: 'eyebrow', text: 'Certified' }),
       el('h1', { class: 'hero__title', text: 'You can run the HD8.' }),
-      el('p', { class: 'lede', text: 'Thirteen levels, twelve Ponder scenes, thirteen simulations and a written final. The PDF is generated on your machine - nothing is uploaded.' })
+      el('p', { class: 'lede', text: 'Thirteen levels, twelve animated scenes, fifteen simulations, and a final that runs a show from an empty room to a finished recording. The PDF is generated on your machine — nothing is uploaded.' })
     ]));
 
     /* ---- the certificate ---- */
