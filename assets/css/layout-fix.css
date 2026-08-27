@@ -352,3 +352,28 @@
   border-radius:var(--r-md); background:var(--surface-1); max-width:520px;
 }
 .qfig__s{ display:block; width:100%; height:auto; font-family:var(--sans); }
+
+/* the Auto follow switch, sitting with the clock or the task heading */
+.autotgl{
+  display:inline-flex; align-items:center; gap:7px; flex:none;
+  padding:4px 7px 4px 9px; border-radius:99px;
+  background:var(--surface-2); border:1px solid var(--line);
+  transition:all var(--t-fast) var(--e-out);
+}
+.autotgl:hover{ border-color:var(--line-strong); }
+.autotgl__l{ font-size:9px; font-weight:700; letter-spacing:.13em; color:var(--ink-4); }
+.autotgl.is-on .autotgl__l{ color:var(--brand); }
+.autotgl__s{
+  width:26px; height:14px; border-radius:99px; position:relative; flex:none;
+  background:var(--surface-4); transition:background var(--t-med) var(--e-out);
+}
+.autotgl__s i{
+  position:absolute; top:2px; left:2px; width:10px; height:10px; border-radius:50%;
+  background:var(--ink-3); transition:transform var(--t-med) var(--e-snap), background var(--t-med);
+}
+.autotgl.is-on .autotgl__s{ background:var(--brand); }
+.autotgl.is-on .autotgl__s i{ transform:translateX(12px); background:#000; }
+
+.simside__head{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:11px; }
+.simside__head .simside__t{ margin:0; }
+.showclk__foot{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:4px; }

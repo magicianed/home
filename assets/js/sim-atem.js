@@ -375,44 +375,44 @@
           hint: 'Click SLIDES on the red row. This is what people see as they arrive.',
           pre: function (s) { s.tab = 'switcher'; }, spot: '.me__row--pgm .xpt[data-src="7"]',
           check: function (s) { return s.program === 7; } },
-        { id: '2', phase: 2, at: 25, label: 'Start recording',
+        { id: '2', phase: 2, at: 12, label: 'Start recording',
           hint: 'Always roll the recording before you go live.',
           pre: function (s) { s.tab = 'switcher'; s.openPalette.rec = true; }, spot: '.recbtn',
           check: function (s, m) { return m.recStarted >= 1; } },
-        { id: '3', phase: 2, at: 45, label: 'Go live to YouTube',
+        { id: '3', phase: 2, at: 24, label: 'Go live to YouTube',
           hint: 'ON AIR in the Streaming panel.',
           pre: function (s) { s.tab = 'switcher'; s.openPalette.stream = true; }, spot: '.onair',
           check: function (s, m) { return m.streamStarted >= 1; } },
-        { id: '4', phase: 2, at: 70, label: 'Fade up on Camera 1 for the welcome',
+        { id: '4', phase: 2, at: 40, label: 'Fade up on Camera 1 for the welcome',
           hint: 'Camera 1 on the green row, then press AUTO.',
           pre: function (s) { s.tab = 'switcher'; }, spot: '.bigb--auto',
           check: function (s, m) { return s.program === 1 && m.autos >= 1; } },
-        { id: '5', phase: 2, at: 100, label: 'Name strip on for the host',
+        { id: '5', phase: 2, at: 55, label: 'Name strip on for the host',
           hint: 'ON AIR on the DSK 1 strip. You set this up earlier.',
           pre: function (s) { s.tab = 'switcher'; }, spot: '.dskstrip[data-dsk="1"] .tcb--air',
           check: function (s) { return s.dsk[0].onAir; } },
-        { id: '6', phase: 2, at: 125, label: 'Name strip off again',
+        { id: '6', phase: 2, at: 70, label: 'Name strip off again',
           hint: 'Press the same button. Eight seconds on screen is plenty.',
           pre: function (s) { s.tab = 'switcher'; }, spot: '.dskstrip[data-dsk="1"] .tcb--air',
           check: function (s, m) { return m.dsk1Cycles >= 1 && !s.dsk[0].onAir; } },
-        { id: '7', phase: 2, at: 160, label: 'Cut between Camera 2 and Camera 3, three times',
+        { id: '7', phase: 2, at: 95, label: 'Cut between Camera 2 and Camera 3, three times',
           hint: 'Green row, CUT, green row, CUT. This is the discussion.',
           pre: function (s) { s.tab = 'switcher'; }, spot: '.bigb--cut',
           check: function (s, m) { return m.discussionCuts >= 3; } },
-        { id: '8', phase: 2, at: 200, label: 'Bring in the green-screen guest',
+        { id: '8', phase: 2, at: 125, label: 'Bring in the green-screen guest',
           hint: 'Turn Upstream Key 1 ON AIR. You already sampled it.',
           pre: function (s) { s.tab = 'switcher'; s.openPalette.usk = true; },
           spot: '.pal[data-pal="usk"] .trow .tgl',
           check: function (s) { return s.usk[0].onAir; } },
-        { id: '9', phase: 2, at: 235, label: 'Wipe across to the wide shot for the close',
+        { id: '9', phase: 2, at: 150, label: 'Wipe across to the wide shot for the close',
           hint: 'Choose WIPE, put WIDE on the green row, then AUTO.',
           pre: function (s) { s.tab = 'switcher'; }, spot: '.tcb--st[data-style="wipe"]',
           check: function (s, m) { return s.program === 4 && m.wipeTakes >= 1; } },
-        { id: '10', phase: 2, at: 265, label: 'Fade to black',
+        { id: '10', phase: 2, at: 170, label: 'Fade to black',
           hint: 'FTB. You are off air.',
           pre: function (s) { s.tab = 'switcher'; }, spot: '.bigb--ftb',
           check: function (s) { return s.ftb; } },
-        { id: '11', phase: 2, at: 285, label: 'Stop the stream, then stop the recording',
+        { id: '11', phase: 2, at: 185, label: 'Stop the stream, then stop the recording',
           hint: 'That order. Then the show exists on the drive.',
           pre: function (s) { s.tab = 'switcher'; s.openPalette.stream = true; s.openPalette.rec = true; },
           spot: '.onair, .recbtn',
@@ -1312,7 +1312,9 @@
         clockEls.due.className = 'showclk__due mono' + (due < -RUNDOWN_WINDOW ? ' is-late' : (due <= 3 ? ' is-now' : ''));
       } else { clockEls.due.textContent = ''; clockEls.due.className = 'showclk__due mono'; }
     }
-    var RUNDOWN_WINDOW = 35;   /* generous - this is about order, not reflexes */
+    /* you are only 'off cue' if you are dramatically off - two whole minutes.
+       The running order is what is being tested, not your reflexes. */
+    var RUNDOWN_WINDOW = 120;
 
     function renderTasks() {
       clear(taskPanel);
@@ -1324,7 +1326,7 @@
         clockEls = { time: timeEl, cue: cueEl, due: dueEl };
         var head = el('div', { class: 'showclk' }, [
           el('div', { class: 'showclk__row' }, [timeEl, dueEl]),
-          cueEl,
+          el('div', { class: 'showclk__foot' }, [cueEl, coachBox.autoEl]),
           clock.running || clock.done ? null : el('button', {
             class: 'btn btn--sm btn--block ' + (phaseOneDone() ? 'btn--go' : 'btn--ghost'),
             style: { marginTop: '10px' },
@@ -1335,7 +1337,10 @@
         taskPanel.appendChild(head);
         taskPanel.appendChild(el('div', { class: 'simside__t', style: { marginTop: '14px' }, text: 'Running order' }));
       } else {
-        taskPanel.appendChild(el('div', { class: 'simside__t', text: 'Tasks — ' + mission.title }));
+        taskPanel.appendChild(el('div', { class: 'simside__head' }, [
+          el('span', { class: 'simside__t', text: 'Tasks — ' + mission.title }),
+          coachBox.autoEl
+        ]));
       }
 
       var list = el('div', { class: 'tasks' });
@@ -1465,18 +1470,18 @@
             return clock.hits[t.id] !== undefined && Math.abs(clock.hits[t.id] - t.at) <= RUNDOWN_WINDOW;
           }).length;
           var total = cues.length;
-          var passed = onTime / total >= 0.6;
+          var passed = onTime / total >= 0.8;
           renderTasks();
           setTimeout(function () {
             w.UI.modal({
               title: passed ? 'That is a show.' : 'You got through it.',
               body: el('div', {}, [
                 el('p', { class: 'lede', style: { fontSize: '15px', marginBottom: '14px' },
-                  text: onTime + ' of ' + total + ' cues inside their window, over ' + w.UI.fmtTime(clock.elapsed) + '.' }),
+                  text: onTime + ' of ' + total + ' cues in the right place, over ' + w.UI.fmtTime(clock.elapsed) + '.' }),
                 el('p', { class: 'muted', style: { fontSize: '13.5px' },
                   text: passed
                     ? 'Every beat landed and the timing held. That is what directing a live show feels like.'
-                    : 'You need about two thirds of the cues within half a minute of their time. Run it again - the running order is the same.' })
+                    : 'A cue only counts as missed if you are more than two minutes off it. Run it again and follow the order.' })
               ]),
               actions: passed
                 ? [{ label: 'Take the final exam →', class: 'btn--primary' }]

@@ -540,7 +540,10 @@
     /* ---------------- tasks ---------------- */
     function renderTasks() {
       clear(taskPanel);
-      taskPanel.appendChild(el('div', { class: 'simside__t', text: 'Tasks - ' + mission.title }));
+      taskPanel.appendChild(el('div', { class: 'simside__head' }, [
+        el('span', { class: 'simside__t', text: 'Tasks — ' + mission.title }),
+        coachBox.autoEl
+      ]));
       var list = el('div', { class: 'tasks' });
       mission.tasks.forEach(function (t) {
         var d = !!doneT[t.id];

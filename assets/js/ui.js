@@ -225,7 +225,7 @@
     var ttl = el('div', { class: 'coach__t' });
     var hnt = el('div', { class: 'coach__h' });
     var autoBtn = el('button', {
-      class: 'coach__auto', title: 'Follow along automatically',
+      class: 'autotgl', title: 'Follow along automatically — opens the right panel and highlights the next control',
       onclick: function () {
         auto = !auto;
         try { w.localStorage.setItem(AUTOKEY, auto ? 'on' : 'off'); } catch (e) {}
@@ -241,11 +241,13 @@
     var bar = el('div', { class: 'coach' }, [
       num,
       el('div', { class: 'coach__body' }, [ttl, hnt]),
-      autoBtn, showBtn
+      showBtn
     ]);
 
     function paintAuto() {
-      autoBtn.textContent = auto ? '● Auto' : '○ Auto';
+      clear(autoBtn);
+      autoBtn.appendChild(el('span', { class: 'autotgl__l', text: 'AUTO' }));
+      autoBtn.appendChild(el('span', { class: 'autotgl__s' }, [el('i')]));
       autoBtn.classList.toggle('is-on', auto);
       showBtn.hidden = auto;
     }
@@ -253,6 +255,7 @@
 
     return {
       el: bar,
+      autoEl: autoBtn,
       get auto() { return auto; },
       /* returns true when the current task changed */
       set: function (task, idx, total) {

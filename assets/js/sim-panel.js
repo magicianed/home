@@ -396,7 +396,10 @@
 
     function renderTasks() {
       clear(taskPanel);
-      taskPanel.appendChild(el('div', { class: 'simside__t', text: 'Panel drills' }));
+      taskPanel.appendChild(el('div', { class: 'simside__head' }, [
+        el('span', { class: 'simside__t', text: 'Panel drills' }),
+        coachBox.autoEl
+      ]));
       var list = el('div', { class: 'tasks' });
       DRILLS.forEach(function (t) {
         var d = !!doneT[t.id];
