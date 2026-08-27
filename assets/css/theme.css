@@ -1,0 +1,228 @@
+/* ============================================================
+   magicianed - "broadcast rack"
+   Loaded last. Everything in here is a deliberate correction of the
+   generic look: one restrained palette, real instrument typography,
+   square corners, no glow, and labels that stop shouting.
+
+   Rule of the palette: only two colours mean anything on this gear -
+   red is on air, green is next. Everything else is greyscale or a
+   desaturated steel. If a colour is not carrying information, it is
+   not a colour.
+   ============================================================ */
+
+:root{
+  /* surfaces - off-black with a cool cast, never pure #000 */
+  --bg:            #0B0D10;
+  --surface-0:     #0F1216;
+  --surface-1:     #14171C;
+  --surface-2:     #191D23;
+  --surface-3:     #21262E;
+  --surface-4:     #2B313A;
+
+  --line:          #1E2229;
+  --line-soft:     #171B21;
+  --line-strong:   #2E353F;
+
+  --ink:           #EEF1F4;
+  --ink-2:         #A7B0BA;
+  --ink-3:         #6E7885;
+  --ink-4:         #4A535E;
+
+  /* the two that carry meaning */
+  --pgm:           #E0332B;
+  --pvw:           #17A75C;
+  /* the rest, desaturated to near-neutral */
+  --info:          #5B7C99;
+  --brand:         #D6DCE3;
+  --audio:         #C08A2E;
+  --key:           #6F8C8F;
+  --iso:           #A2707E;
+
+  --pgm-dim:       #2A1210;
+  --pvw-dim:       #0D2419;
+  --info-dim:      #141E27;
+  --brand-dim:     #1C2129;
+  --audio-dim:     #241D11;
+  --key-dim:       #16211F;
+  --iso-dim:       #241A1D;
+
+  /* instrument typography */
+  --sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --cond: "IBM Plex Sans Condensed", "IBM Plex Sans", -apple-system, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* square. this is equipment, not a landing page */
+  --r-xs: 2px;
+  --r-sm: 2px;
+  --r-md: 3px;
+  --r-lg: 3px;
+  --r-xl: 4px;
+}
+
+/* ---------- light: the same rack under the lights ---------- */
+:root[data-theme="light"]{
+  --bg:#EEF0F2; --surface-0:#FFFFFF; --surface-1:#F8F9FA; --surface-2:#EFF1F3;
+  --surface-3:#E2E5E9; --surface-4:#D2D7DD;
+  --line:#DCE0E5; --line-soft:#E9ECEF; --line-strong:#BFC6CE;
+  --ink:#0E1116; --ink-2:#3A4249; --ink-3:#68717B; --ink-4:#939BA4;
+  --pgm:#C42A22; --pvw:#0F7F45; --brand:#1B2129;
+  --info:#41607C; --audio:#8E6512; --key:#4E6C6F; --iso:#8A505E;
+  --pgm-dim:#FBE9E8; --pvw-dim:#E6F3EC; --info-dim:#E9EEF3;
+  --brand-dim:#E7EAEE; --audio-dim:#F6EFE2; --key-dim:#E8EFEF; --iso-dim:#F5EAEC;
+}
+:root[data-theme="light"] .aw,
+:root[data-theme="light"] .pn__stage,
+:root[data-theme="light"] .wkstage,
+:root[data-theme="light"] .winhost,
+:root[data-theme="light"] .wire,
+:root[data-theme="light"] .chassis,
+:root[data-theme="light"] .cert,
+:root[data-theme="light"] .panelwrap,
+:root[data-theme="light"] .rearwrap__scroll{
+  --bg:#0B0D10; --surface-0:#0F1216; --surface-1:#14171C; --surface-2:#191D23;
+  --surface-3:#21262E; --surface-4:#2B313A;
+  --line:#1E2229; --line-soft:#171B21; --line-strong:#2E353F;
+  --ink:#EEF1F4; --ink-2:#A7B0BA; --ink-3:#6E7885; --ink-4:#4A535E;
+  --pgm:#E0332B; --pvw:#17A75C; --info:#5B7C99; --brand:#D6DCE3;
+  --audio:#C08A2E; --key:#6F8C8F; --iso:#A2707E;
+  --pgm-dim:#2A1210; --pvw-dim:#0D2419; --info-dim:#141E27;
+  --brand-dim:#1C2129; --audio-dim:#241D11; --key-dim:#16211F; --iso-dim:#241A1D;
+}
+
+/* ============================================================
+   shape: square everything the page owns
+   ============================================================ */
+.card, .btn, .modal, .input, .chip, .coach, .modcard, .resume,
+.lvpip, .task, .fixrow, .qfig, .wkrail, .wkstage, .wkcap, .wknav,
+.showclk, .cue, .toast, .rearinfo, .winhost, .aw, .wire, .pn__stage,
+.pn__cap, .pn__ctl, .certlock, .navitem, .rail__link, .steprow,
+.opt, .devrow, .w32, .coach__n, .lvhead__n, .avatar{
+  border-radius:var(--r-md);
+}
+.chip, .cue, .coach__n, .modcard__pill, .lvpip{ border-radius:2px; }
+.lvpip__i, .wkrail__n, .lvup__n, .certlock__ring, .task__box, .steprow__i{
+  border-radius:2px;
+}
+.result__ring, .xpmeter, .joy, .joy__puck, .pn-port__r, .pn-port__h,
+.aw__dots i, .avatar, .autotgl, .autotgl__s, .autotgl__s i, .task__q,
+.dot, .livedot, .aw__devdot{ border-radius:50%; }
+.autotgl, .autotgl__s{ border-radius:99px; }
+
+/* no glow anywhere. elevation comes from value, not blur */
+.aw, .winhost, .wire, .w32, .modal, .toast, .coach, .cert, .joy__puck,
+.pxb.is-pgm, .pxb.is-pvw{
+  box-shadow:none;
+}
+.modal{ box-shadow:0 24px 64px rgba(0,0,0,.55); }
+.w32{ box-shadow:0 12px 32px rgba(0,0,0,.5); }
+.coach{ box-shadow:0 6px 18px rgba(0,0,0,.4); }
+.pn-el.is-hi{ filter:none; }
+.pn-el.is-hi .f--t, .pn-el.is-hi .f--plate, .pn-el.is-hi .f--scr{ stroke-width:2; }
+
+/* ============================================================
+   type
+   ============================================================ */
+body{ font-family:var(--sans); letter-spacing:0; }
+.h1,.h2,.h3,.hero__title,.lvhead__t,.gate__title,.wkcap__t,.modal__title,
+.quiz__q,.vid__q,.modcard__t,.rearinfo__t,.pn__title,.coach__t,.lvup__name{
+  font-family:var(--sans); letter-spacing:-.011em;
+}
+/* numerals and instrument readouts get the condensed cut */
+.showclk__t, .stat__k, .lvhead__n, .result__pct, .cue, .coach__n,
+.lvmeter__n, .quiz__count, .xpmeter__num, .plcd__l1, .plcd__l2, .plcd__l3{
+  font-family:var(--cond); font-feature-settings:"tnum" 1;
+}
+.showclk__t{ font-size:30px; font-weight:600; letter-spacing:0; }
+.stat__k{ font-weight:600; letter-spacing:0; }
+
+/* ============================================================
+   stop shouting: the page chrome drops its uppercase eyebrows.
+   Hardware legends keep theirs, because real panels are engraved.
+   ============================================================ */
+.eyebrow, .stat__l, .rail__urole, .navgroup__title, .simside__t,
+.wkrail__h, .phasehead, .steplist__t, .field__label, .lvmeter__n,
+.cert__eyebrow{
+  text-transform:none;
+  letter-spacing:0;
+  font-weight:500;
+  font-size:12px;
+  color:var(--ink-3);
+}
+.navgroup__title, .simside__t, .wkrail__h, .phasehead{
+  font-size:11.5px; color:var(--ink-4);
+}
+.stat__l{ font-size:11.5px; }
+.chip{
+  text-transform:none; letter-spacing:0; font-weight:500; font-size:12px;
+}
+.modcard__pill{ text-transform:none; letter-spacing:0; font-size:11px; font-weight:500; }
+.autotgl__l{ letter-spacing:.06em; }
+.gate__eyebrow{ font-size:12.5px; }
+
+/* ============================================================
+   de-purple: every hard-coded violet from the old palette
+   ============================================================ */
+.avatar{ background:var(--surface-2); border-color:var(--line-strong); color:var(--ink-2); }
+.navitem.is-active .navitem__num{ background:var(--surface-4); border-color:var(--line-strong); color:var(--ink); }
+.navitem.is-active::before{ background:var(--ink-2); }
+.btn--brand{ background:var(--surface-3); border-color:var(--line-strong); color:var(--ink); }
+.btn--brand:hover{ background:var(--surface-4); border-color:#3A424D; color:var(--ink); }
+.btn--go{ background:var(--pvw-dim); border-color:#175F39; color:#4FC98A; }
+.btn--go:hover{ background:#11351F; border-color:#1E7A4A; }
+.resume:hover{ border-color:var(--line-strong); }
+.resume__ico{ background:var(--surface-2); border-color:var(--line-strong); color:var(--ink-2); }
+.coach{ border-color:var(--line-strong); }
+.coach__n{ background:var(--surface-3); border-color:var(--line-strong); color:var(--ink-2); }
+.coach.is-done{ border-color:#175F39; }
+.coach.is-done .coach__n{ background:var(--pvw-dim); border-color:#175F39; color:var(--pvw); }
+.lvup__n{ background:var(--surface-2); border-color:var(--line-strong); color:var(--ink); }
+.certlock__ring{ border-color:var(--line-strong); background:var(--surface-2); }
+.certlock__ring .mono{ color:var(--ink-2); }
+.chip--brand{ background:var(--surface-2); border-color:var(--line-strong); color:var(--ink-2); }
+.macrobtn{ background:var(--surface-2); border-color:var(--line); color:var(--ink-2); }
+.macrobtn:hover{ background:var(--surface-3); }
+.lvpip.is-active .lvpip__i{ background:var(--ink-2); color:var(--bg); }
+.wkrail__s.is-on .wkrail__n{ background:var(--ink-2); color:var(--bg); }
+.trackbar span.cur{ background:var(--ink-2); }
+.pmb.is-on{ background:var(--ink-2); border-color:var(--ink-2); color:#000; }
+.pn__dot.is-on, .pn__dot.is-past{ background:var(--ink-2); }
+.pn__b--play{ background:var(--surface-3); border-color:var(--line-strong); color:var(--ink); }
+.pn__b--play:hover{ background:var(--surface-4); }
+.autotgl.is-on .autotgl__s{ background:var(--pvw); }
+.autotgl.is-on .autotgl__l{ color:var(--pvw); }
+.xpmeter__fill{ stroke:var(--ink-2); }
+.lvmeter__bar i, .quiz__bar i, .wkbar i, .simprog__bar i{ background:var(--ink-2); }
+.simprog__bar i{ background:var(--pvw); }
+.lvmeter__n b{ color:var(--ink); }
+.rail__scrim{ background:rgba(0,0,0,.66); }
+
+/* the spotlight goes white, not violet */
+.is-spot{ outline-color:var(--ink); }
+@keyframes spotPulse{
+  0%,100%{ box-shadow:0 0 0 0 rgba(238,241,244,.4); }
+  50%{ box-shadow:0 0 0 8px rgba(238,241,244,0); }
+}
+
+/* brand mark: tally red and preview green, the only two that mean anything */
+.brand__seg--pgm{ background:var(--pgm); }
+.brand__seg--pvw{ background:var(--pvw); }
+.boot__bar--b{ background:var(--ink-2); }
+.gate__title em{ color:var(--ink); }
+.cert__rule::after{ background:var(--pgm); }
+
+/* ============================================================
+   density: hairlines, tighter chrome
+   ============================================================ */
+.topbar{ height:52px; }
+.rail__top{ height:52px; }
+.card--pad{ padding:16px; }
+.modcard__body{ padding:15px 16px 16px; }
+.wrapc{ padding:28px 30px 80px; }
+.hero{ margin-bottom:28px; }
+.hero__title{ font-weight:600; }
+.lvhead__n{
+  width:38px; height:38px; font-size:15px; font-weight:600;
+  background:var(--surface-2); border-color:var(--line-strong); color:var(--ink-2) !important;
+}
+.lvpip{ padding:6px 12px 6px 8px; font-size:12.5px; }
+.task{ padding:10px 12px; }

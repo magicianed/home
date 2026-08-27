@@ -137,7 +137,7 @@
     var d = new w.MiniPDF.Doc(W, H);
     var BLACK = [0, 0, 0], WHITE = [1, 1, 1];
     var GREY = [0.62, 0.62, 0.66], DIM = [0.42, 0.42, 0.47];
-    var RED = [1, 0.176, 0.176], PURPLE = [0.635, 0.349, 1], GREEN = [0.129, 0.816, 0.478];
+    var RED = [0.878, 0.200, 0.169], ACCENT = [0.839, 0.863, 0.890], GREEN = [0.090, 0.655, 0.361];
 
     /* ground */
     d.rect(0, 0, W, H, BLACK);
@@ -149,7 +149,7 @@
     /* mark - three bars, top left */
     var mx = 64, my = H - 92;
     d.rect(mx, my, 9, 26, RED);
-    d.rect(mx + 13, my, 9, 26, PURPLE);
+    d.rect(mx + 13, my, 9, 26, ACCENT);
     d.rect(mx + 26, my, 9, 26, GREEN);
     d.text('MAGICIANED', mx + 46, my + 8, 12, WHITE, { bold: true, track: 260 });
 
@@ -169,7 +169,7 @@
     /* rule under the name */
     var rw = Math.min(W - 220, Math.max(260, d.textWidth(name, size, true, 0) + 80));
     d.rect(W / 2 - rw / 2, H - 256, rw, 1, [0.24, 0.24, 0.28]);
-    d.rect(W / 2 - 22, H - 257, 44, 3, PURPLE);
+    d.rect(W / 2 - 22, H - 257, 44, 3, RED);
 
     /* body */
     d.text('has completed the operator mastery course for the', W / 2, H - 292, 12.5, GREY, { align: 'c' });
