@@ -243,11 +243,32 @@
      coach: the current instruction, pinned to the top, following
      you automatically so you never look back and forth
      ============================================================ */
+  /* the readout that replaces the Auto switch during the final */
+  function hintTicker() {
+    var num = el('span', { class: 'hintcount__n mono' });
+    var box = el('div', { class: 'hintcount', title: 'The final gives you five hints in total, across all four stages.' }, [
+      num, el('span', { class: 'hintcount__l', text: 'hints left' })
+    ]);
+    function refresh() {
+      var left = w.State.hintsLeft();
+      num.textContent = String(left);
+      box.classList.toggle('is-out', left === 0);
+      box.classList.toggle('is-low', left > 0 && left <= 2);
+    }
+    refresh();
+    return { el: box, refresh: refresh };
+  }
+
   var AUTOKEY = 'magicianed.coach.auto';
   function coach(cfg) {
-    /* off unless you ask for it - the hand-holding should be opt in */
-    var auto = (function () { try { return w.localStorage.getItem(AUTOKEY) === 'on'; } catch (e) { return false; } })();
+    cfg = cfg || {};
+    /* off unless you ask for it - the hand-holding should be opt in. In the
+       final it is not on offer at all; there you get five hints instead. */
+    var auto = cfg.exam ? false : (function () {
+      try { return w.localStorage.getItem(AUTOKEY) === 'on'; } catch (e) { return false; }
+    })();
     var lastId = null;
+    var ticker = cfg.exam ? hintTicker() : null;
 
     var num = el('span', { class: 'coach__n mono' });
     var ttl = el('div', { class: 'coach__t' });
@@ -266,13 +287,14 @@
       class: 'btn btn--sm btn--brand nowrap', text: 'Show me',
       onclick: function () { cfg.onSpot && cfg.onSpot(true); }
     });
-    var bar = el('div', { class: 'coach' }, [
+    var bar = el('div', { class: 'coach' + (cfg.exam ? ' coach--exam' : '') }, [
       num,
       el('div', { class: 'coach__body' }, [ttl, hnt]),
       showBtn
     ]);
 
     function paintAuto() {
+      if (cfg.exam) { showBtn.hidden = true; return; }
       clear(autoBtn);
       autoBtn.appendChild(el('span', { class: 'autotgl__l', text: 'AUTO' }));
       autoBtn.appendChild(el('span', { class: 'autotgl__s' }, [el('i')]));
@@ -283,7 +305,8 @@
 
     return {
       el: bar,
-      autoEl: autoBtn,
+      autoEl: cfg.exam ? ticker.el : autoBtn,
+      refreshHints: function () { if (ticker) ticker.refresh(); },
       get auto() { return auto; },
       /* returns true when the current task changed */
       set: function (task, idx, total) {
@@ -326,7 +349,7 @@
 
   w.UI = {
     el: el, qs: qs, qsa: qsa, clear: clear, esc: esc, append: append,
-    spotlight: spotlight, taskRow: taskRow, coach: coach, icon: icon,
+    spotlight: spotlight, taskRow: taskRow, coach: coach, icon: icon, hintTicker: hintTicker,
     toast: toast, modal: modal, confirm: confirmBox,
     Sound: Sound, fmtTime: fmtTime, shuffle: shuffle, clamp: clamp, drag: drag
   };

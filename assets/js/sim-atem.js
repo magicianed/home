@@ -500,6 +500,7 @@
 
     /* the instruction you are on, pinned above the window */
     var coachBox = w.UI.coach({
+      exam: !!opts.exam,
       root: root,
       onSpot: function () { var t = currentTask(); if (t) spotTask(t); },
       onRefresh: function () { applyCoach(true); }
@@ -1364,7 +1365,7 @@
         var row = w.UI.taskRow({
           label: label,
           hint: lock ? '' : t.hint,
-          spot: lock ? null : t.spot
+          spot: (lock || (opts.exam && w.State.hintsLeft() <= 0)) ? null : t.spot
         }, done, spotTask);
         if (lock) row.classList.add('is-lock');
         if (mission.rundown && t.phase === 2) {
@@ -1399,6 +1400,15 @@
        then pulse the control itself */
     function spotTask(t) {
       if (!t) return;
+      /* in the final a hint costs you one of five */
+      if (opts.exam) {
+        if (!w.State.useHint()) {
+          w.UI.toast('<b>No hints left.</b> You have used all five.', 'bad', 3000);
+          renderTasks();
+          return;
+        }
+        coachBox.refreshHints();
+      }
       if (t.pre) { try { t.pre(s); } catch (e) {} }
       render();
       setTimeout(function () {

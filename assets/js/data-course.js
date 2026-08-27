@@ -159,11 +159,11 @@
       title: 'Run The Show', blurb: 'Show day, start to finish. Every single thing you have learned, in order.',
       tags: ['Wiring', 'Setup', 'Live sim', 'Written'],
       steps: [
-        { type: 'sim', sim: 'wiring', level: 2, title: 'Stage 1 — rig the studio',
-          intro: 'Show day starts with an empty room. Patch the whole thing from scratch: three cameras and their return cables, the outputs, the sound, the network, the recording drive and the power. Nothing is plugged in for you.' },
-        { type: 'sim', sim: 'setup', title: 'Stage 2 — set the switcher up',
+        { type: 'sim', sim: 'wiring', level: 2, exam: true, title: 'Stage 1 — rig the studio',
+          intro: 'Show day starts with an empty room. Patch the whole thing from scratch. This is the exam, so the sockets no longer light up while you drag — you are expected to know where they go. You have five hints for the whole final; the ? on any patch spends one.' },
+        { type: 'sim', sim: 'setup', exam: true, title: 'Stage 2 — set the switcher up',
           intro: 'Power is on and nothing works yet. Name the switcher, pick the picture format, give it a fixed address on the network, and set your monitor layout — then save it to the box.' },
-        { type: 'sim', sim: 'atem', mission: 'showtime', title: 'Stage 3 — build the show, then run it',
+        { type: 'sim', sim: 'atem', mission: 'showtime', exam: true, title: 'Stage 3 — build the show, then run it',
           intro: 'Now build the show itself: drag your graphics in, set the name strip up, key the green screen, mix the sound, match the cameras, and point the stream and the recording at the right places. When the rig is ready the clock unlocks, and you direct the whole thing live.' },
         { type: 'quiz', title: 'Stage 4 — written final', bank: 'final', pass: 0.85, count: 14, final: true,
           intro: 'Fourteen questions drawn from the whole course. 85% to pass, and then the certificate is yours.' }

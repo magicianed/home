@@ -102,6 +102,7 @@
     var infoBar = el('div', { class: 'wireinfo', text: lvl.brief });
 
     var taskPanel = el('div', { class: 'card card--pad' });
+    var ticker = opts.exam ? w.UI.hintTicker() : null;
     clear(host).appendChild(el('div', { class: 'simwrap' }, [
       el('div', {}, [board, statusBar, infoBar]),
       el('div', { class: 'simside' }, [taskPanel])
@@ -173,10 +174,35 @@
         }
       });
     }
+    /* In a lesson the valid sockets glow while you drag, which is how you
+       learn them. In the final they do not - you are expected to know, and
+       a hint is what lights them up. */
     function highlight(p, on) {
+      if (opts.exam && on) return;
       p.accept.forEach(function (id) {
-        if (portNodes[id] && !used[id]) portNodes[id].classList.toggle('is-hint', on);
+        if (portNodes[id]) portNodes[id].classList.toggle('is-hint', false);
       });
+      if (!on) return;
+      p.accept.forEach(function (id) {
+        if (portNodes[id] && !used[id]) portNodes[id].classList.add('is-hint');
+      });
+    }
+
+    /* a hint lights the right socket for one patch */
+    function hintFor(p) {
+      if (opts.exam) {
+        if (!w.State.useHint()) {
+          w.UI.toast('<b>No hints left.</b> You have used all five.', 'bad', 3000);
+          renderTasks();
+          return;
+        }
+        if (ticker) ticker.refresh();
+      }
+      var free = p.accept.filter(function (id) { return !used[id]; });
+      if (!free.length) return;
+      var sel = free.map(function (id) { return '.wport[data-port="' + id + '"]'; }).join(',');
+      w.UI.spotlight(board, sel);
+      renderTasks();
     }
     function portUnder(x, y) {
       var found = null;
@@ -274,17 +300,21 @@
 
     function renderTasks() {
       clear(taskPanel);
-      taskPanel.appendChild(el('div', { class: 'simside__t', text: 'Patch list - ' + lvl.title }));
+      var head = el('div', { class: 'simside__head' }, [
+        el('span', { class: 'simside__t', text: 'Patch list — ' + lvl.title })
+      ]);
+      if (ticker) head.appendChild(ticker.el);
+      taskPanel.appendChild(head);
+
       var list = el('div', { class: 'tasks' });
+      var outOfHints = opts.exam && w.State.hintsLeft() <= 0;
       lvl.patches.forEach(function (p) {
         var d = !!patched[p.id];
-        list.appendChild(el('div', { class: 'task' + (d ? ' is-done' : '') }, [
-          el('i', { class: 'task__box', text: '✓' }),
-          el('div', { class: 'grow' }, [
-            el('span', { text: p.dev + ' — ' + p.end }),
-            d ? el('span', { class: 'task__hint', text: p.why }) : null
-          ])
-        ]));
+        list.appendChild(w.UI.taskRow({
+          label: p.dev + ' — ' + p.end,
+          hint: d ? p.why : '',
+          spot: (d || outOfHints) ? null : true
+        }, d, function () { hintFor(p); }));
       });
       taskPanel.appendChild(list);
     }

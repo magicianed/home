@@ -152,6 +152,7 @@
 
     var taskPanel = el('div', { class: 'card card--pad' });
     var coachBox = w.UI.coach({
+      exam: !!opts.exam,
       root: desktop,
       onSpot: function () { var t = currentTask(); if (t) spotTask(t); },
       onRefresh: function () { applyCoach(true); }
@@ -170,6 +171,14 @@
     function rebuildAll() { Object.keys(wins).forEach(function (k) { rebuild(k); }); }
     function spotTask(t) {
       if (!t) return;
+      if (opts.exam) {
+        if (!w.State.useHint()) {
+          w.UI.toast('<b>No hints left.</b> You have used all five.', 'bad', 3000);
+          renderTasks();
+          return;
+        }
+        coachBox.refreshHints();
+      }
       if (t.pre) { try { t.pre(c); rebuildAll(); } catch (e) {} }
       setTimeout(function () {
         if (!w.UI.spotlight(desktop, t.spot, { persist: coachBox.auto })) {
@@ -547,7 +556,9 @@
       var list = el('div', { class: 'tasks' });
       mission.tasks.forEach(function (t) {
         var d = !!doneT[t.id];
-        list.appendChild(w.UI.taskRow(t, d, spotTask));
+        list.appendChild(w.UI.taskRow(
+          (opts.exam && w.State.hintsLeft() <= 0) ? { label: t.label, hint: t.hint } : t,
+          d, spotTask));
       });
       taskPanel.appendChild(list);
       var n = mission.tasks.filter(function (t) { return doneT[t.id]; }).length;

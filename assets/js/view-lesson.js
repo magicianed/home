@@ -119,11 +119,12 @@
       var sh = el('div');
       bodyHost.appendChild(sh);
       var done = function () { complete('<b>Level cleared.</b>'); };
+      var ex = !!step.exam;
       if (step.sim === 'rear') live = w.SimRear.mount(sh, { onComplete: done });
-      else if (step.sim === 'wiring') live = w.SimWiring.mount(sh, { level: step.level || 1, onComplete: done });
-      else if (step.sim === 'panel') live = w.SimPanel.mount(sh, { onComplete: done });
-      else if (step.sim === 'atem') live = w.SimATEM.mount(sh, { mission: step.mission, onComplete: done });
-      else live = w.SimWindows.mount(sh, { mission: step.sim, onComplete: done });
+      else if (step.sim === 'wiring') live = w.SimWiring.mount(sh, { level: step.level || 1, exam: ex, onComplete: done });
+      else if (step.sim === 'panel') live = w.SimPanel.mount(sh, { exam: ex, onComplete: done });
+      else if (step.sim === 'atem') live = w.SimATEM.mount(sh, { mission: step.mission, exam: ex, onComplete: done });
+      else live = w.SimWindows.mount(sh, { mission: step.sim, exam: ex, onComplete: done });
     }
 
     /* ---- nav ---- */

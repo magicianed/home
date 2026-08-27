@@ -162,6 +162,7 @@
     var root = el('div', { class: 'panelwrap' });
     var taskPanel = el('div', { class: 'card card--pad' });
     var coachBox = w.UI.coach({
+      exam: !!opts.exam,
       root: root,
       onSpot: function () { var t = currentDrill(); if (t) w.UI.spotlight(root, t.spot); },
       onRefresh: function () { applyCoach(true); }

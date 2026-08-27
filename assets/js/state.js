@@ -20,6 +20,7 @@
     sims: {},         // "wiring" -> {best, runs, passed}
     seconds: 0,       // time on task
     xp: 0,
+    examHints: 5,     // hints remaining for the final, across all four stages
     certificate: null // {id, issuedAt, name}
   };
 
@@ -163,6 +164,19 @@
       data.certificate = { id: id, issuedAt: Date.now(), name: State.fullName() };
       save(); State.emit('certificate');
       return data.certificate;
+    },
+
+    /* ---------- hints (the final only) ---------- */
+    HINT_BUDGET: 5,
+    hintsLeft: function () {
+      return data.examHints === undefined ? State.HINT_BUDGET : data.examHints;
+    },
+    useHint: function () {
+      var left = State.hintsLeft();
+      if (left <= 0) return false;
+      data.examHints = left - 1;
+      save(); State.emit('hint');
+      return true;
     },
 
     /* ---------- xp & levels ---------- */

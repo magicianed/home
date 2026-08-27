@@ -232,3 +232,17 @@ body{ font-family:var(--sans); letter-spacing:0; }
 .navitem__lock{ display:flex; align-items:center; color:var(--ink-4); }
 .navitem.is-locked:hover .navitem__lock{ color:var(--ink-3); }
 .themebtn{ display:grid; place-items:center; }
+
+/* hints remaining, in the slot the Auto switch uses elsewhere */
+.hintcount{
+  display:inline-flex; align-items:baseline; gap:6px; flex:none;
+  padding:4px 9px; border-radius:2px;
+  background:var(--surface-2); border:1px solid var(--line);
+}
+.hintcount__n{ font-family:var(--cond); font-size:15px; font-weight:600; color:var(--ink); }
+.hintcount__l{ font-size:11px; color:var(--ink-4); }
+.hintcount.is-low{ border-color:var(--audio); }
+.hintcount.is-low .hintcount__n{ color:var(--audio); }
+.hintcount.is-out{ border-color:var(--pgm); }
+.hintcount.is-out .hintcount__n{ color:var(--pgm); }
+.coach--exam .btn{ display:none; }
