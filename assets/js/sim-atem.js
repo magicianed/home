@@ -504,7 +504,12 @@
       onSpot: function () { var t = currentTask(); if (t) spotTask(t); },
       onRefresh: function () { applyCoach(true); }
     });
-    root.insertBefore(coachBox.el, root.firstChild);
+    /* Only show the instruction bar when this switcher owns the task list.
+       Inside the Windows simulation the ATEM is mounted in free-play with no
+       tasks of its own - the host owns them - and a coach there would report
+       an empty list as 'every step done'. */
+    var ownsTasks = mission.tasks.length > 0 && !opts.embedded;
+    if (ownsTasks) root.insertBefore(coachBox.el, root.firstChild);
 
     if (opts.embedded) {
       win.classList.add('aw--embed');
@@ -1317,6 +1322,7 @@
     var RUNDOWN_WINDOW = 120;
 
     function renderTasks() {
+      if (!mission.tasks.length) { clear(taskPanel); return; }
       clear(taskPanel);
 
       if (mission.rundown) {
@@ -1414,6 +1420,7 @@
        actually on - so you never have to hunt for the next control */
     var coachBusy = false;
     function applyCoach(force) {
+      if (!ownsTasks) return;
       var t = currentTask();
       var idx = t ? mission.tasks.indexOf(t) : mission.tasks.length;
       var changed = coachBox.set(t, idx, mission.tasks.length);
