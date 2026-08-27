@@ -194,6 +194,8 @@
       answered = false;
       var card = el('div', { class: 'step' });
       card.appendChild(el('div', { class: 'quiz__q', text: q.q }));
+      var figSvg = q.fig && w.QUIZ.fig ? w.QUIZ.fig(q.fig) : null;
+      if (figSvg) card.appendChild(el('div', { class: 'qfig', html: figSvg }));
       var optBox = el('div', { class: 'vid__opts' });
       var order = w.UI.shuffle(q.opts.map(function (o, k) { return k; }), seed + i * 31);
       order.forEach(function (origIdx, pos) {

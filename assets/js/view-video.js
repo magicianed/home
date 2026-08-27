@@ -121,7 +121,14 @@
       if (i >= cps.length) return duration;
       return cps[i].at * duration;
     }
-    function segStart(i) { return i === 0 ? 0 : cpTime(i - 1); }
+    /* where 'rewatch' jumps back to: the checkpoint's own anchor if it has
+       one, otherwise the previous checkpoint. Anchors sit well before the
+       part being asked about, so you never land mid-sentence. */
+    function segStart(i) {
+      var cp = cps[i];
+      if (cp && typeof cp.from === 'number' && duration) return Math.max(0, cp.from * duration);
+      return i === 0 ? 0 : cpTime(i - 1);
+    }
 
     function openGate(i) {
       if (gateOpen && current === i) return;
@@ -142,7 +149,7 @@
       var cp = cps[i];
       clear(gate);
       gate.appendChild(el('div', { class: 'vid__gatehead' }, [
-        el('span', { class: 'chip chip--info', text: 'Checkpoint ' + (i + 1) + ' of ' + cps.length }),
+        el('span', { class: 'chip chip--info', text: 'Quick check ' + (i + 1) + ' of ' + cps.length }),
         el('span', { class: 'chip', text: cp.topic })
       ]));
       gate.appendChild(el('div', { class: 'vid__q', text: cp.q }));
@@ -171,7 +178,7 @@
                 onclick: function () { closeGate(); if (player) player.playVideo(); checkFinish(); }
               }),
               el('button', {
-                class: 'btn btn--ghost', text: 'Rewatch this segment',
+                class: 'btn btn--ghost', text: '↺ Rewatch this part',
                 onclick: function () { closeGate(); if (player) { player.seekTo(segStart(i), true); player.playVideo(); } }
               })
             ]));
@@ -185,10 +192,10 @@
             btn.classList.add('is-locked', 'is-dim');
             if (!gate.querySelector('.vid__retry')) {
               gate.appendChild(el('div', { class: 'vid__retry' }, [
-                el('div', { class: 'explain', html: '<b>Not quite.</b> Rewatch the segment and try again - you cannot continue until this is right.' }),
+                el('div', { class: 'explain', html: '<b>Not quite.</b> Jump back and watch that part again - you cannot continue until this is right.' }),
                 el('div', { class: 'vid__foot' }, [
                   el('button', {
-                    class: 'btn btn--brand', text: 'Rewatch this segment',
+                    class: 'btn btn--brand', text: '↺ Rewatch this part',
                     onclick: function () {
                       closeGate();
                       if (player) { player.seekTo(segStart(i), true); player.playVideo(); }
@@ -241,7 +248,7 @@
     function paintMeta(msg) {
       clear(meta);
       var n = w.State.checkpointsDone(vid, cps.length);
-      meta.appendChild(el('span', { class: 'mono', text: msg || (n + ' / ' + cps.length + ' checkpoints passed') }));
+      meta.appendChild(el('span', { class: 'mono', text: msg || (n + ' / ' + cps.length + ' checks passed') }));
       if (duration) meta.appendChild(el('span', { class: 'mono', text: 'runtime ' + w.UI.fmtTime(duration) }));
       meta.appendChild(el('span', { text: conf.note }));
       meta.appendChild(el('a', {

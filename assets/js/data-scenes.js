@@ -63,13 +63,6 @@
       S.cable(c3.sock, u.inp(2), { key: 'w3', accent: 'var(--pvw)', sag: 10 });
       S.cable(u.out(0), [p[0], p[1], 30], { key: 'wp', accent: 'var(--pgm)', sag: 20 });
       S.cable(u.out(2), [v[0], v[1], 30], { key: 'wv', accent: 'var(--pvw)', sag: 16 });
-
-      /* sockets drawn last so they sit on top of the cable ends */
-      S.port(u.inp(0)[0], u.inp(0)[1], u.inp(0)[2], { key: 'w1', accent: 'var(--pvw)' });
-      S.port(u.inp(1)[0], u.inp(1)[1], u.inp(1)[2], { key: 'w2', accent: 'var(--pvw)' });
-      S.port(u.inp(2)[0], u.inp(2)[1], u.inp(2)[2], { key: 'w3', accent: 'var(--pvw)' });
-      S.port(u.out(0)[0], u.out(0)[1], u.out(0)[2], { key: 'wp', accent: 'var(--pgm)' });
-      S.port(u.out(2)[0], u.out(2)[1], u.out(2)[2], { key: 'wv', accent: 'var(--pvw)' });
     },
     beats: [
       { t: 'Three cameras are pointing at your show.', on: ['cam1', 'cam2', 'cam3'], ms: 2800 },
@@ -142,10 +135,6 @@
 
       S.cable(c.sock, pIn, { key: 'wIn', accent: 'var(--pvw)', sag: 22 });
       S.cable(pOut, c.back, { key: 'wRet', accent: 'var(--key)', sag: 66 });
-      S.port(pIn[0], pIn[1], pIn[2], { key: 'wIn', accent: 'var(--pvw)' });
-      S.port(pOut[0], pOut[1], pOut[2], { key: 'wRet', accent: 'var(--key)' });
-      S.port(c.sock[0], c.sock[1], c.sock[2], { key: 'wIn', accent: 'var(--pvw)' });
-      S.port(c.back[0], c.back[1], c.back[2], { key: 'wRet', accent: 'var(--key)' });
 
       S.note(-224, -132, 'cable 1  —  picture out', { key: 'lIn', accent: 'var(--pvw)' });
       S.note(-70, 186, 'cable 2  —  picture back', { key: 'lRet', accent: 'var(--key)' });
@@ -464,8 +453,6 @@
       S.cable(pNet, [r[0], r[1] + 22, 7], { key: 'wNet', accent: 'var(--info)', sag: 16 });
       S.cable([r[0] + 72, r[1] + 22, 7], [cl[0] + 8, cl[1], 28], { key: 'wUp', accent: 'var(--iso)', sag: 18 });
       S.cable(pUsb, [d[0] + 12, d[1], 9], { key: 'wUsb', accent: 'var(--iso)', sag: 26 });
-      S.port(pNet[0], pNet[1], pNet[2], { key: 'wNet', accent: 'var(--info)' });
-      S.port(pUsb[0], pUsb[1], pUsb[2], { key: 'wUsb', accent: 'var(--iso)' });
 
       S.note(-160, 196, 'network cable', { key: 'nNet', accent: 'var(--info)' });
       S.note(158, 222, 'USB drive', { key: 'nUsb', accent: 'var(--iso)' });

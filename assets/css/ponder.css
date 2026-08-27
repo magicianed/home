@@ -99,12 +99,16 @@
 .pn-tally.is-hi{ fill:var(--pgm); stroke:var(--pgm); animation:tallyPulse 1s var(--e-inout) infinite; }
 @keyframes tallyPulse{ 0%,100%{ opacity:1 } 50%{ opacity:.55 } }
 
-/* cables */
-.pn-cable__l{ fill:none; stroke:var(--acc,#3a3a44); stroke-width:2.4; stroke-linecap:round; opacity:.7; }
-.pn-el.is-hi .pn-cable__l{ opacity:1; stroke-width:3.2; }
-.pn-flow{ opacity:0; transition:opacity .3s var(--e-out); }
-.pn-el.is-flow .pn-flow{ opacity:1; }
-.pn-dot{ fill:var(--acc,#fff); }
+/* cables - the wire is static, only a dash travels along it */
+.pn-cable__l{ fill:none; stroke:var(--acc,#3a3a44); stroke-width:2.4; stroke-linecap:round; opacity:.55; }
+.pn-el.is-hi .pn-cable__l{ opacity:1; stroke-width:3; }
+.pn-cable__p{
+  fill:none; stroke:var(--acc,#fff); stroke-width:3.6; stroke-linecap:round;
+  stroke-dasharray:7 100; stroke-dashoffset:107;
+  opacity:0; transition:opacity .3s var(--e-out);
+}
+.pn-el.is-flow .pn-cable__p{ opacity:1; animation-name:pnPulse; animation-timing-function:linear; animation-iteration-count:infinite; }
+@keyframes pnPulse{ from{ stroke-dashoffset:107; } to{ stroke-dashoffset:0; } }
 
 /* flat ui mock-ups */
 .pn-ui__r{ fill:#141418; stroke:var(--acc,#33333b); stroke-width:1.2; transition:fill .3s var(--e-out), stroke .3s var(--e-out); }

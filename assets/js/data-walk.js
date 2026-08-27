@@ -99,16 +99,6 @@
       S.prism(ssd[0], ssd[1], 0, 60, 38, 12, { key: 'ssd', label: 'DRIVE', small: true, accent: 'var(--iso)' });
       S.cable([h[0] + 84, h[1] + DP, 8], [ssd[0] + 10, ssd[1], 8], { key: 'wSsd', accent: 'var(--iso)', sag: 26 });
 
-      /* sockets on top of the cable ends */
-      [0, 1, 2].forEach(function (i) { var q = inp(i); S.port(q[0], q[1], q[2], { key: 'wIn' + (i + 1), accent: 'var(--pvw)' }); });
-      [['wRet1', 6], ['wRet2', 14], ['wRet3', 22]].forEach(function (r) {
-        S.port(h[0] + r[1], h[1] + DP, 8, { key: r[0], accent: 'var(--key)' });
-      });
-      S.port(out(0)[0], out(0)[1], out(0)[2], { key: 'wMon', accent: 'var(--info)' });
-      S.port(out(3)[0], out(3)[1], out(3)[2], { key: 'wMic', accent: 'var(--audio)' });
-      S.port(out(5)[0], out(5)[1], out(5)[2], { key: 'wNet', accent: 'var(--info)' });
-      S.port(h[0] + 84, h[1] + DP, 8, { key: 'wSsd', accent: 'var(--iso)' });
-      S.port(h[0] + 110, h[1] + DP, 6, { key: 'wPwr', accent: 'var(--pgm)' });
     },
     steps: [
       { t: 'Power first, before any cameras.',

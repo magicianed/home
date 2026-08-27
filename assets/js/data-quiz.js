@@ -11,7 +11,7 @@
 
   /* ---- after level 3: the box and the cables ---- */
   s1: [
-    { q: 'The red row of buttons is:',
+    { q: 'The red row of buttons is:', fig: 'rows',
       opts: ['What the audience is watching right now', 'What you have lined up next', 'The recording', 'The sound mixer'],
       a: 0, why: 'Red is live. Green is what goes next, and nobody sees it.',
       learn: { mod: 'm01', step: 0 } },
@@ -75,7 +75,7 @@
       opts: ['CUT', 'AUTO', 'The slider', 'FTB'],
       a: 0, why: 'An instant change is invisible to the audience. Fades are the exception.',
       learn: { mod: 'm06', step: 0 } },
-    { q: 'You leave the slider halfway and walk away. What is on screen?',
+    { q: 'You leave the slider halfway and walk away. What is on screen?', fig: 'fader',
       opts: ['Both shots at once, indefinitely', 'The live shot', 'The next shot', 'Black'],
       a: 0, why: 'It stays exactly where you leave it.',
       learn: { mod: 'm06', step: 0 } },
@@ -83,7 +83,7 @@
       opts: ['Fade To Black', 'Full Time Broadcast', 'Fade To Blue', 'Freeze The Background'],
       a: 0, why: 'Picture and sound to nothing, and it holds there. Your emergency stop.',
       learn: { mod: 'm06', step: 0 } },
-    { q: 'A name strip needs to stay on screen while you cut between cameras. It must be on:',
+    { q: 'A name strip needs to stay on screen while you cut between cameras. It must be on:', fig: 'layers',
       opts: ['A late layer, above the change of shot', 'An early layer, below the change of shot', 'The camera itself', 'The audio page'],
       a: 0, why: 'Late layers sit above the transition, so the picture can change underneath them.',
       learn: { mod: 'm07', step: 0 } },
@@ -115,7 +115,7 @@
       opts: ['Audio Follows Video', 'Automatic Fader Volume', 'Audio From VTR', 'Amplified Feed Voltage'],
       a: 0, why: 'That source is only heard while its camera is on screen.',
       learn: { mod: 'm09', step: 0 } },
-    { q: 'Where should the loudest moment of your show sit?',
+    { q: 'Where should the loudest moment of your show sit?', fig: 'meter',
       opts: ['A little below the top of the meter', 'Right at the top', 'Halfway', 'As low as possible'],
       a: 0, why: 'Touch the top and the sound breaks up. Leave yourself room.',
       learn: { mod: 'm09', step: 0 } },
@@ -177,7 +177,51 @@
     return out.concat(FINAL_EXTRA);
   }
 
+  /* small diagrams that give a question the context it needs */
+  var FIGS = {
+    meter:
+      '<svg viewBox="0 0 240 130" class="qfig__s">' +
+      '<rect x="96" y="10" width="26" height="110" rx="3" fill="var(--surface-0)" stroke="var(--line)"/>' +
+      '<rect x="99" y="52" width="20" height="65" fill="var(--pvw)"/>' +
+      '<rect x="99" y="40" width="20" height="12" fill="var(--audio)"/>' +
+      '<line x1="92" y1="14" x2="126" y2="14" stroke="var(--pgm)" stroke-width="2"/>' +
+      '<text x="134" y="18" fill="var(--pgm)" font-size="11">0 — sound breaks up</text>' +
+      '<line x1="92" y1="40" x2="126" y2="40" stroke="var(--audio)" stroke-width="2"/>' +
+      '<text x="134" y="44" fill="var(--audio)" font-size="11">-6 loudest moment</text>' +
+      '<line x1="92" y1="52" x2="126" y2="52" stroke="var(--pvw)" stroke-width="2"/>' +
+      '<text x="134" y="56" fill="var(--pvw)" font-size="11">-10 aim here</text>' +
+      '<text x="10" y="70" fill="var(--ink-3)" font-size="11">sound</text>' +
+      '<text x="10" y="84" fill="var(--ink-3)" font-size="11">meter</text></svg>',
+    rows:
+      '<svg viewBox="0 0 300 100" class="qfig__s">' +
+      '<rect x="8" y="12" width="284" height="32" rx="4" fill="var(--pgm-dim)" stroke="var(--pgm)"/>' +
+      '<text x="150" y="32" text-anchor="middle" fill="var(--pgm)" font-size="12" font-weight="700">TOP ROW</text>' +
+      '<rect x="8" y="54" width="284" height="32" rx="4" fill="var(--pvw-dim)" stroke="var(--pvw)"/>' +
+      '<text x="150" y="74" text-anchor="middle" fill="var(--pvw)" font-size="12" font-weight="700">BOTTOM ROW</text></svg>',
+    layers:
+      '<svg viewBox="0 0 300 130" class="qfig__s">' +
+      '<rect x="40" y="86" width="220" height="26" rx="3" fill="var(--surface-2)" stroke="var(--line-strong)"/>' +
+      '<text x="150" y="103" text-anchor="middle" fill="var(--ink-2)" font-size="11">the camera that is live</text>' +
+      '<rect x="40" y="52" width="220" height="26" rx="3" fill="var(--info-dim)" stroke="var(--info)"/>' +
+      '<text x="150" y="69" text-anchor="middle" fill="var(--info)" font-size="11">the change of shot</text>' +
+      '<rect x="40" y="18" width="220" height="26" rx="3" fill="var(--brand-dim)" stroke="var(--brand)"/>' +
+      '<text x="150" y="35" text-anchor="middle" fill="var(--brand)" font-size="11">name strip</text>' +
+      '<text x="286" y="24" text-anchor="end" fill="var(--ink-4)" font-size="9">LAST</text>' +
+      '<text x="286" y="124" text-anchor="end" fill="var(--ink-4)" font-size="9">FIRST</text></svg>',
+    fader:
+      '<svg viewBox="0 0 300 120" class="qfig__s">' +
+      '<rect x="18" y="14" width="116" height="66" rx="4" fill="#16202c" stroke="var(--line-strong)"/>' +
+      '<rect x="18" y="14" width="116" height="66" rx="4" fill="#1d1a2c" opacity=".5"/>' +
+      '<text x="76" y="52" text-anchor="middle" fill="var(--audio)" font-size="11">both at once</text>' +
+      '<rect x="196" y="10" width="34" height="100" rx="4" fill="var(--surface-0)" stroke="var(--line-strong)"/>' +
+      '<rect x="196" y="58" width="34" height="52" rx="4" fill="var(--info-dim)"/>' +
+      '<rect x="199" y="52" width="28" height="12" rx="2" fill="var(--surface-4)" stroke="#55555f"/>' +
+      '<text x="244" y="62" fill="var(--ink-3)" font-size="11">left halfway</text>' +
+      '<text x="76" y="100" text-anchor="middle" fill="var(--ink-4)" font-size="10">what goes out</text></svg>'
+  };
+
   w.QUIZ = {
+    fig: function (name) { return FIGS[name] || null; },
     bank: function (id) { return id === 'final' ? all() : (BANKS[id] || []); },
     pick: function (id, count, seed) {
       var pool = w.QUIZ.bank(id);

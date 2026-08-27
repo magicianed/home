@@ -95,6 +95,17 @@
     });
   }
 
+  /* ---------------- theme ---------------- */
+  var TKEY = 'magicianed.theme';
+  function theme() { try { return w.localStorage.getItem(TKEY) || 'dark'; } catch (e) { return 'dark'; } }
+  function setTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    try { w.localStorage.setItem(TKEY, t); } catch (e) {}
+    var b = qs('#themeBtn');
+    if (b) { b.textContent = t === 'light' ? '☾' : '☀'; b.title = t === 'light' ? 'Switch to dark' : 'Switch to light'; }
+  }
+  setTheme(theme());
+
   /* ---------------- chrome ---------------- */
   function refreshChrome() {
     /* user block */
@@ -133,6 +144,14 @@
     if (fill) fill.style.strokeDashoffset = String(97.4 * (1 - pct / 100));
     var num = qs('#xpnum');
     if (num) num.textContent = pct + '%';
+
+    /* theme toggle */
+    if (!qs('#themeBtn')) {
+      var tb = el('button', { class: 'themebtn', id: 'themeBtn',
+        onclick: function () { setTheme(theme() === 'light' ? 'dark' : 'light'); Sound.tap(); } });
+      qs('.topbar__right').appendChild(tb);
+      setTheme(theme());
+    }
 
     /* level + xp meter */
     var lv = w.State.level();

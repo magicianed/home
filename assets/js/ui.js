@@ -191,18 +191,88 @@
 
   /* ---------- spotlight: "show me where" ---------- */
   var spotTimer = null;
-  function spotlight(root, selector) {
-    qsa('.is-spot', root).forEach(function (n) { n.classList.remove('is-spot'); });
-    if (spotTimer) clearTimeout(spotTimer);
+  function spotlight(root, selector, opts) {
+    opts = opts || {};
+    qsa('.is-spot', document).forEach(function (n) { n.classList.remove('is-spot'); });
+    if (spotTimer) { clearTimeout(spotTimer); spotTimer = null; }
+    if (!selector) return false;
     var targets = qsa(selector, root);
-    if (!targets.length) { toast('Nothing to point at on this screen yet.', 'info'); return false; }
+    if (!targets.length) return false;
     targets.forEach(function (n) { n.classList.add('is-spot'); });
-    try { targets[0].scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {}
-    spotTimer = setTimeout(function () {
-      targets.forEach(function (n) { n.classList.remove('is-spot'); });
-    }, 6000);
-    Sound.tap();
+    if (opts.scroll !== false) {
+      try { targets[0].scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {}
+    }
+    /* persistent spotlights stay until the task changes */
+    if (!opts.persist) {
+      spotTimer = setTimeout(function () {
+        targets.forEach(function (n) { n.classList.remove('is-spot'); });
+      }, 6000);
+    }
+    if (opts.quiet !== true) Sound.tap();
     return true;
+  }
+
+  /* ============================================================
+     coach: the current instruction, pinned to the top, following
+     you automatically so you never look back and forth
+     ============================================================ */
+  var AUTOKEY = 'magicianed.coach.auto';
+  function coach(cfg) {
+    var auto = (function () { try { return w.localStorage.getItem(AUTOKEY) !== 'off'; } catch (e) { return true; } })();
+    var lastId = null;
+
+    var num = el('span', { class: 'coach__n mono' });
+    var ttl = el('div', { class: 'coach__t' });
+    var hnt = el('div', { class: 'coach__h' });
+    var autoBtn = el('button', {
+      class: 'coach__auto', title: 'Follow along automatically',
+      onclick: function () {
+        auto = !auto;
+        try { w.localStorage.setItem(AUTOKEY, auto ? 'on' : 'off'); } catch (e) {}
+        paintAuto();
+        if (auto) { lastId = null; cfg.onRefresh && cfg.onRefresh(); }
+        else spotlight(cfg.root, null);
+      }
+    });
+    var showBtn = el('button', {
+      class: 'btn btn--sm btn--brand nowrap', text: 'Show me',
+      onclick: function () { cfg.onSpot && cfg.onSpot(true); }
+    });
+    var bar = el('div', { class: 'coach' }, [
+      num,
+      el('div', { class: 'coach__body' }, [ttl, hnt]),
+      autoBtn, showBtn
+    ]);
+
+    function paintAuto() {
+      autoBtn.textContent = auto ? '● Auto' : '○ Auto';
+      autoBtn.classList.toggle('is-on', auto);
+      showBtn.hidden = auto;
+    }
+    paintAuto();
+
+    return {
+      el: bar,
+      get auto() { return auto; },
+      /* returns true when the current task changed */
+      set: function (task, idx, total) {
+        if (!task) {
+          bar.classList.add('is-done');
+          num.textContent = total + '/' + total;
+          ttl.textContent = 'Every step done.';
+          hnt.textContent = '';
+          lastId = null;
+          return false;
+        }
+        bar.classList.remove('is-done');
+        num.textContent = (idx + 1) + '/' + total;
+        ttl.textContent = task.label;
+        hnt.textContent = task.hint || '';
+        var changed = task.id !== lastId;
+        lastId = task.id;
+        return changed;
+      }
+    };
   }
 
   /* a task row with an optional "show me" button */
@@ -225,7 +295,7 @@
 
   w.UI = {
     el: el, qs: qs, qsa: qsa, clear: clear, esc: esc, append: append,
-    spotlight: spotlight, taskRow: taskRow,
+    spotlight: spotlight, taskRow: taskRow, coach: coach,
     toast: toast, modal: modal, confirm: confirmBox,
     Sound: Sound, fmtTime: fmtTime, shuffle: shuffle, clamp: clamp, drag: drag
   };

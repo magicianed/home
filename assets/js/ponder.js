@@ -130,20 +130,24 @@
         var sag = o.sag === undefined ? 26 : o.sag;
         var mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2 + sag;
         var d = 'M' + a[0].toFixed(1) + ',' + a[1].toFixed(1) + ' Q' + mx.toFixed(1) + ',' + my.toFixed(1) + ' ' + b[0].toFixed(1) + ',' + b[1].toFixed(1);
-        var id = 'pnp' + (++uid);
         var g = sv('g', { class: 'pn-cable', style: o.accent ? '--acc:' + o.accent : null });
-        g.appendChild(sv('path', { id: id, d: d, class: 'pn-cable__l' }));
-        var dots = sv('g', { class: 'pn-flow' });
-        for (var i = 0; i < 3; i++) {
-          var dot = sv('circle', { r: 3.6, class: 'pn-dot' });
-          var mo = sv('animateMotion', { dur: (o.speed || 1.7) + 's', repeatCount: 'indefinite', begin: (i * (o.speed || 1.7) / 3).toFixed(2) + 's' });
-          mo.appendChild(sv('mpath', { href: '#' + id }));
-          mo.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '#' + id);
-          dot.appendChild(mo);
-          dots.appendChild(dot);
+        /* the wire itself never moves */
+        g.appendChild(sv('path', { d: d, class: 'pn-cable__l' }));
+        /* a bright dash rides along the same path, drawn by animating the
+           dash offset. pathLength normalises every cable to 100 units so one
+           keyframe works for all of them, however long the run is. */
+        g.appendChild(sv('path', {
+          d: d, class: 'pn-cable__p', pathLength: '100',
+          style: 'animation-duration:' + (o.speed || 1.7) + 's'
+        }));
+        /* draw the sockets from the cable's own endpoints, so a wire can
+           never end up floating next to the hole it is supposed to be in */
+        if (o.ends !== false) {
+          [a, b].forEach(function (pt) {
+            g.appendChild(sv('circle', { cx: pt[0], cy: pt[1], r: 5.2, class: 'pn-port__r' }));
+            g.appendChild(sv('circle', { cx: pt[0], cy: pt[1], r: 2.1, class: 'pn-port__h' }));
+          });
         }
-        g.appendChild(dots);
-        if (o.key) cables[o.key] = id;
         return S.add(g, o.key, o.always);
       },
 

@@ -197,9 +197,44 @@
     frameFor(opts.src, st).forEach(function (n) { base.appendChild(n); });
     root.appendChild(base);
     if (opts.mix && opts.mix.t > 0) {
-      var over = s('g', { opacity: Math.min(1, opts.mix.t).toFixed(3) });
+      var t = Math.min(1, opts.mix.t);
+      var style = opts.mix.style || 'mix';
+      var over = s('g', {});
       frameFor(opts.mix.to, st).forEach(function (n) { over.appendChild(n); });
-      root.appendChild(over);
+
+      if (style === 'wipe') {
+        /* a hard edge sweeps across, revealing the new picture */
+        var cid = 'wipe' + Math.random().toString(36).slice(2, 7);
+        var cp = s('clipPath', { id: cid }, [s('rect', { x: 0, y: 0, width: (W * t).toFixed(1), height: H })]);
+        root.appendChild(cp);
+        over.setAttribute('clip-path', 'url(#' + cid + ')');
+        root.appendChild(over);
+        root.appendChild(s('rect', { x: (W * t - 2).toFixed(1), y: 0, width: 4, height: H, fill: '#ffffff' }));
+      } else if (style === 'dve') {
+        /* the new picture slides in from the right, pushing nothing */
+        over.setAttribute('transform', 'translate(' + (W * (1 - t)).toFixed(1) + ',0)');
+        root.appendChild(over);
+        root.appendChild(s('rect', { x: (W * (1 - t)).toFixed(1), y: 0, width: 3, height: H, fill: '#ffffff', opacity: '.8' }));
+      } else if (style === 'dip') {
+        /* out through a colour, then in to the new picture */
+        if (t < 0.5) {
+          root.appendChild(s('rect', { x: 0, y: 0, width: W, height: H, fill: '#ffffff', opacity: (t * 2).toFixed(3) }));
+        } else {
+          over.setAttribute('opacity', '1');
+          root.appendChild(over);
+          root.appendChild(s('rect', { x: 0, y: 0, width: W, height: H, fill: '#ffffff', opacity: (2 - t * 2).toFixed(3) }));
+        }
+        root.appendChild(s('text', { x: W / 2, y: 16, class: 'pic__t', fill: '#000' }, [txt('DIPPING THROUGH WHITE')]));
+      } else if (style === 'sting') {
+        /* a graphic covers the screen, and the shot changes behind it */
+        if (t >= 0.5) { over.setAttribute('opacity', '1'); root.appendChild(over); }
+        var cover = Math.min(1, (0.5 - Math.abs(t - 0.5)) * 2 + 0.15);
+        root.appendChild(s('rect', { x: 0, y: 0, width: W, height: H, fill: '#a259ff', opacity: cover.toFixed(3) }));
+        root.appendChild(s('rect', { x: 96, y: 82, width: 128, height: 16, rx: 3, fill: '#ffffff', opacity: cover.toFixed(3) }));
+      } else {
+        over.setAttribute('opacity', t.toFixed(3));
+        root.appendChild(over);
+      }
     }
 
     /* upstream key */

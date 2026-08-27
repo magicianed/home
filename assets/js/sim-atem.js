@@ -28,6 +28,7 @@
     { id: 3021, short: 'MP2K',   long: 'Media Player 2 Key', bank: 2 },
     { id: 6000, short: 'SSrc',   long: 'SuperSource',      bank: 2 }
   ];
+  var STYLE_NAME = { mix: 'FADING ACROSS', dip: 'DIPPING THROUGH WHITE', wipe: 'WIPING ACROSS', sting: 'GRAPHIC WIPE', dve: 'SLIDING ACROSS' };
   function src(id) { for (var i = 0; i < SRC.length; i++) if (SRC[i].id === id) return SRC[i]; return SRC[0]; }
   function srcName(id) { return src(id).long; }
 
@@ -135,8 +136,8 @@
           hint: 'CUT switches instantly. Watch the two pictures trade places.',
           spot: '.bigb--cut',
           check: function (s, m) { return m.cuts >= 1 && s.program === 2; } },
-        { id: 'd', label: 'Choose MIX, and set the length to 12',
-          hint: 'MIX fades one picture into the other. 12 frames is about half a second.',
+        { id: 'd', label: 'Choose FADE, and set the length to 12',
+          hint: 'FADE blends one picture into the other. 12 means about half a second.',
           spot: '.tcb--st[data-style="mix"], .tc__rate',
           check: function (s) { return s.style === 'mix' && s.rate === 12; } },
         { id: 'e', label: 'Line up Camera 3, then press AUTO',
@@ -308,59 +309,112 @@
       ]
     },
 
-    /* the final: a real rundown against a clock */
+    /* the final. Two halves: build the rig with all the time in the
+       world, then run the show against a clock. */
     showtime: {
       title: 'Run the show',
       ordered: true,
       rundown: true,
-      preset: true,
+      phases: ['Set the show up — no clock, take your time', 'On air — hit each cue near its time'],
       tasks: [
-        { id: '1', at: 0, label: 'Holding slide up',
-          hint: 'Click Slides on the red row. The audience sees this while they arrive.',
-          spot: '.me__row--pgm .xpt[data-src="7"]',
+        /* ---------- phase 1: build the rig ---------- */
+        { id: 'p1', phase: 1, label: 'Go to the Media page and drag the name strip into slot 1',
+          hint: 'LT_01_HostName.png. Drag it from the row of files down onto the first empty slot.',
+          pre: function (s) { s.tab = 'media'; }, spot: '.mt__files',
+          check: function (s) { return s.pool[0] && s.pool[0].name === 'LT_01_HostName.png'; } },
+        { id: 'p2', phase: 1, label: 'Drag the holding slide into slot 2',
+          hint: 'HOLDING_Slide.png. This is what the audience sees before you start.',
+          pre: function (s) { s.tab = 'media'; }, spot: '.mt__files',
+          check: function (s) { return s.pool[1] && s.pool[1].name === 'HOLDING_Slide.png'; } },
+        { id: 'p3', phase: 1, label: 'Point Player 1 at slot 1',
+          hint: 'Back on the Switcher page, in the Media Players panel.',
+          pre: function (s) { s.tab = 'switcher'; s.openPalette.media = true; },
+          spot: '.pal[data-pal="media"]',
+          check: function (s) { return s.players[0].slot === 0; } },
+        { id: 'p4', phase: 1, label: 'Set the graphic layer to use Player 1, with Pre Multiplied Key on',
+          hint: 'Downstream Key 1: Fill = Media Player 1, Key = Media Player 1 Key, then the Pre Multiplied switch.',
+          pre: function (s) { s.tab = 'switcher'; s.openPalette.dsk = true; },
+          spot: '.pal[data-pal="dsk"]',
+          check: function (s) { return s.dsk[0].fill === 3010 && s.dsk[0].keySrc === 3011 && s.dsk[0].pre; } },
+        { id: 'p5', phase: 1, label: 'Set Upstream Key 1 to Chroma on the Green Screen camera, and sample it',
+          hint: 'Type Chroma, Fill Source Green Screen, then press SAMPLE.',
+          pre: function (s) { s.tab = 'switcher'; s.openPalette.usk = true; },
+          spot: '.pal[data-pal="usk"]',
+          check: function (s) { return s.usk[0].type === 'chroma' && s.usk[0].fill === 5 && s.usk[0].sampled; } },
+        { id: 'p6', phase: 1, label: 'Sound: presenter microphone ON, cameras 1-3 on AFV',
+          hint: 'AFV means that camera is only heard while it is on air.',
+          pre: function (s) { s.tab = 'audio'; }, spot: '.strip[data-ch="mic1"], .strip[data-ch="in1"], .strip[data-ch="in2"], .strip[data-ch="in3"]',
+          check: function (s) {
+            return s.audio.ch.mic1.state === 'on' &&
+              ['in1', 'in2', 'in3'].every(function (k) { return s.audio.ch[k].state === 'afv'; });
+          } },
+        { id: 'p7', phase: 1, label: 'Sound: green screen camera OFF, master between -6 and 0',
+          hint: 'That camera has no useful microphone. The master is the strip on the far right.',
+          pre: function (s) { s.tab = 'audio'; }, spot: '.strip[data-ch="in5"], .strip--master',
+          check: function (s) { return s.audio.ch.in5.state === 'off' && s.audio.master >= -6 && s.audio.master <= 0; } },
+        { id: 'p8', phase: 1, label: 'Match camera 2 to camera 1',
+          hint: 'Colour temperature 3200, black level 0, iris 5.6, tint 0.',
+          pre: function (s) { s.tab = 'camera'; s.sel = 2; }, spot: '.camctrl',
+          check: function (s) {
+            var c = s.cam[2];
+            return c.wb === 3200 && c.black === 0 && Math.abs(c.iris - 5.6) < 0.05 && c.tint === 0;
+          } },
+        { id: 'p9', phase: 1, label: 'Set the stream up: YouTube, a stream key, and 1080p 5 Mb/s',
+          hint: 'The venue uploads at 10 Mb/s, so send at about half.',
+          pre: function (s) { s.tab = 'switcher'; s.openPalette.stream = true; },
+          spot: '.pal[data-pal="stream"]',
+          check: function (s) { return s.stream.platform === 'YouTube' && s.stream.key.length >= 8 && s.stream.quality === '1080p 5 Mb/s'; } },
+        { id: 'p10', phase: 1, label: 'Choose the SHOW_SSD (exFAT) drive to record onto',
+          hint: 'The other two drives will cause you trouble later.',
+          pre: function (s) { s.tab = 'switcher'; s.openPalette.rec = true; },
+          spot: '.pal[data-pal="rec"]',
+          check: function (s) { return s.rec.disk === 'SHOW_SSD (exFAT)'; } },
+
+        /* ---------- phase 2: the show ---------- */
+        { id: '1', phase: 2, at: 0, label: 'Holding slide up',
+          hint: 'Click SLIDES on the red row. This is what people see as they arrive.',
+          pre: function (s) { s.tab = 'switcher'; }, spot: '.me__row--pgm .xpt[data-src="7"]',
           check: function (s) { return s.program === 7; } },
-        { id: '2', at: 10, label: 'Start recording',
-          hint: 'The drive is already chosen. Just press RECORD.',
-          pre: function (s) { s.openPalette.rec = true; },
-          spot: '.recbtn',
+        { id: '2', phase: 2, at: 25, label: 'Start recording',
+          hint: 'Always roll the recording before you go live.',
+          pre: function (s) { s.tab = 'switcher'; s.openPalette.rec = true; }, spot: '.recbtn',
           check: function (s, m) { return m.recStarted >= 1; } },
-        { id: '3', at: 20, label: 'Go live to YouTube',
-          hint: 'The key is already entered. Press ON AIR.',
-          pre: function (s) { s.openPalette.stream = true; },
-          spot: '.onair',
+        { id: '3', phase: 2, at: 45, label: 'Go live to YouTube',
+          hint: 'ON AIR in the Streaming panel.',
+          pre: function (s) { s.tab = 'switcher'; s.openPalette.stream = true; }, spot: '.onair',
           check: function (s, m) { return m.streamStarted >= 1; } },
-        { id: '4', at: 35, label: 'Fade up on Camera 1 for the welcome',
-          hint: 'Camera 1 on the green row, then AUTO.',
-          spot: '.bigb--auto',
+        { id: '4', phase: 2, at: 70, label: 'Fade up on Camera 1 for the welcome',
+          hint: 'Camera 1 on the green row, then press AUTO.',
+          pre: function (s) { s.tab = 'switcher'; }, spot: '.bigb--auto',
           check: function (s, m) { return s.program === 1 && m.autos >= 1; } },
-        { id: '5', at: 50, label: 'Name strip on for the host',
-          hint: 'Downstream Key 1 is already set up. Just press its ON AIR.',
-          spot: '.dskstrip[data-dsk="1"] .tcb--air',
+        { id: '5', phase: 2, at: 100, label: 'Name strip on for the host',
+          hint: 'ON AIR on the DSK 1 strip. You set this up earlier.',
+          pre: function (s) { s.tab = 'switcher'; }, spot: '.dskstrip[data-dsk="1"] .tcb--air',
           check: function (s) { return s.dsk[0].onAir; } },
-        { id: '6', at: 65, label: 'Name strip off again',
-          hint: 'Eight seconds is plenty. Press ON AIR again.',
-          spot: '.dskstrip[data-dsk="1"] .tcb--air',
+        { id: '6', phase: 2, at: 125, label: 'Name strip off again',
+          hint: 'Press the same button. Eight seconds on screen is plenty.',
+          pre: function (s) { s.tab = 'switcher'; }, spot: '.dskstrip[data-dsk="1"] .tcb--air',
           check: function (s, m) { return m.dsk1Cycles >= 1 && !s.dsk[0].onAir; } },
-        { id: '7', at: 85, label: 'Cut between Camera 2 and Camera 3 three times',
+        { id: '7', phase: 2, at: 160, label: 'Cut between Camera 2 and Camera 3, three times',
           hint: 'Green row, CUT, green row, CUT. This is the discussion.',
-          spot: '.bigb--cut',
+          pre: function (s) { s.tab = 'switcher'; }, spot: '.bigb--cut',
           check: function (s, m) { return m.discussionCuts >= 3; } },
-        { id: '8', at: 115, label: 'Bring in the green-screen guest',
-          hint: 'Upstream Key 1 is already sampled. Turn it ON AIR.',
-          pre: function (s) { s.openPalette.usk = true; },
-          spot: '.pal[data-pal="usk"] .tgl',
+        { id: '8', phase: 2, at: 200, label: 'Bring in the green-screen guest',
+          hint: 'Turn Upstream Key 1 ON AIR. You already sampled it.',
+          pre: function (s) { s.tab = 'switcher'; s.openPalette.usk = true; },
+          spot: '.pal[data-pal="usk"] .trow .tgl',
           check: function (s) { return s.usk[0].onAir; } },
-        { id: '9', at: 140, label: 'Wipe to the wide shot for the close',
+        { id: '9', phase: 2, at: 235, label: 'Wipe across to the wide shot for the close',
           hint: 'Choose WIPE, put WIDE on the green row, then AUTO.',
-          spot: '.tcb--st[data-style="wipe"]',
+          pre: function (s) { s.tab = 'switcher'; }, spot: '.tcb--st[data-style="wipe"]',
           check: function (s, m) { return s.program === 4 && m.wipeTakes >= 1; } },
-        { id: '10', at: 160, label: 'Fade to black',
+        { id: '10', phase: 2, at: 265, label: 'Fade to black',
           hint: 'FTB. You are off air.',
-          spot: '.bigb--ftb',
+          pre: function (s) { s.tab = 'switcher'; }, spot: '.bigb--ftb',
           check: function (s) { return s.ftb; } },
-        { id: '11', at: 170, label: 'Stop the stream, then stop the recording',
-          hint: 'In that order. Then the show exists on disk.',
-          pre: function (s) { s.openPalette.stream = true; s.openPalette.rec = true; },
+        { id: '11', phase: 2, at: 285, label: 'Stop the stream, then stop the recording',
+          hint: 'That order. Then the show exists on the drive.',
+          pre: function (s) { s.tab = 'switcher'; s.openPalette.stream = true; s.openPalette.rec = true; },
           spot: '.onair, .recbtn',
           check: function (s, m) { return m.cleanShutdown; } }
       ]
@@ -375,29 +429,22 @@
     var mission = MISSIONS[opts.mission] || MISSIONS.switching;
     var s = freshState();
     initAudio(s); initCam(s);
-    if (opts.mission === 'keying' || mission.preset) {
+    if (opts.mission === 'keying') {
       s.pool[0] = MEDIA_LIBRARY[0]; s.pool[1] = MEDIA_LIBRARY[3];
       s.players[0].slot = 0; s.players[1].slot = 1;
-    }
-    /* the final is a directing test, not a setup test - the rig is already
-       built, exactly as it would be five minutes before doors */
-    if (mission.preset) {
-      s.stream.platform = 'YouTube';
-      s.stream.key = 'live-7f2a-9d31-c8b4';
-      s.stream.quality = '1080p 5 Mb/s';
-      s.rec.disk = 'SHOW_SSD (exFAT)';
-      s.dsk[0].fill = 3010; s.dsk[0].keySrc = 3011; s.dsk[0].pre = true;
-      s.usk[0].type = 'chroma'; s.usk[0].fill = 5; s.usk[0].sampled = true;
-      s.openPalette.rec = true; s.openPalette.stream = true;
-      s.program = 0; s.preview = 7;
     }
     if (mission.startTab) s.tab = mission.startTab;
 
     /* ---------- show clock (final only) ---------- */
     var clock = { running: false, t0: 0, elapsed: 0, hits: {}, done: false, tick: null };
     function clockNow() { return clock.running ? (Date.now() - clock.t0) / 1000 : clock.elapsed; }
+    function phaseOneDone() {
+      return mission.tasks.filter(function (t) { return t.phase === 1; })
+        .every(function (t) { return doneTasks[t.id]; });
+    }
     function startClock() {
       if (clock.running || clock.done) return;
+      if (!phaseOneDone()) { w.UI.toast('Finish setting the rig up first.', 'info'); return; }
       clock.running = true;
       clock.t0 = Date.now() - clock.elapsed * 1000;
       clock.tick = setInterval(function () {
@@ -407,6 +454,7 @@
       Sound.arm();
       w.UI.toast('<b>You are on.</b> Follow the running order down the right.', 'brand', 3600);
       renderTasks();
+      applyCoach(true);
     }
     function stopClock() {
       clock.running = false;
@@ -440,7 +488,7 @@
     ['switcher', 'media', 'audio', 'camera'].forEach(function (t) {
       tabs.appendChild(el('button', {
         class: 'awtab', data: { tab: t }, text: t.charAt(0).toUpperCase() + t.slice(1),
-        onclick: function () { s.tab = t; Sound.tap(); render(); }
+        onclick: function () { s.tab = t; Sound.tap(); after(); }
       }));
     });
     var body = el('div', { class: 'aw__body' });
@@ -449,6 +497,14 @@
     /* ---------- task panel ---------- */
     var taskPanel = el('div', { class: 'card card--pad' });
     var sidebar = el('div', { class: 'simside' }, [taskPanel]);
+
+    /* the instruction you are on, pinned above the window */
+    var coachBox = w.UI.coach({
+      root: root,
+      onSpot: function () { var t = currentTask(); if (t) spotTask(t); },
+      onRefresh: function () { applyCoach(true); }
+    });
+    root.insertBefore(coachBox.el, root.firstChild);
 
     if (opts.embedded) {
       win.classList.add('aw--embed');
@@ -535,6 +591,7 @@
       else if (s.tab === 'audio') body.appendChild(renderAudio());
       else body.appendChild(renderCamera());
       renderTasks();
+      if (!coachBusy) applyCoach();
     }
 
     /* ---------- monitors / multiview ---------- */
@@ -573,12 +630,12 @@
 
       /* ---- what is actually going out ---- */
       var notes = [];
-      if (s.inTransition) notes.push(el('div', { class: 'ovl ovl--trans', text: s.style.toUpperCase() + '  ' + Math.round(s.tbar * 100) + '%' }));
+      if (s.tbar > 0) notes.push(el('div', { class: 'ovl ovl--trans', text: STYLE_NAME[s.style] + '  ' + Math.round(s.tbar * 100) + '%' }));
       var pgmPic = w.Pic.make({
         src: s.program,
         st: s,
         ftb: s.ftb,
-        mix: s.tbar > 0 ? { to: s.preview, t: s.tbar } : null,
+        mix: s.tbar > 0 ? { to: s.preview, t: s.tbar, style: s.style } : null,
         usk: s.usk[0],
         dsk: s.dsk,
         grade: s.cam[s.program]
@@ -674,7 +731,7 @@
 
       var st = el('div', { class: 'tc__block' }, [el('div', { class: 'tc__lbl', text: 'TRANSITION STYLE' })]);
       var stRow = el('div', { class: 'tc__btns' });
-      [['mix', 'MIX'], ['dip', 'DIP'], ['wipe', 'WIPE'], ['sting', 'STING'], ['dve', 'DVE']].forEach(function (p) {
+      [['mix', 'FADE'], ['dip', 'DIP'], ['wipe', 'WIPE'], ['sting', 'STING'], ['dve', 'SLIDE']].forEach(function (p) {
         stRow.appendChild(el('button', {
           class: 'tcb tcb--st' + (s.style === p[0] ? ' is-on' : ''), text: p[1], data: { style: p[0] },
           onclick: function () { s.style = p[0]; Sound.tap(); after(); }
@@ -1247,7 +1304,7 @@
       if (!clockEls) return;
       var t = clockNow();
       clockEls.time.textContent = w.UI.fmtTime(t);
-      var nextTask = mission.tasks.filter(function (x) { return !doneTasks[x.id]; })[0];
+      var nextTask = mission.tasks.filter(function (x) { return x.phase === 2 && !doneTasks[x.id]; })[0];
       clockEls.cue.textContent = nextTask ? 'cue at ' + w.UI.fmtTime(nextTask.at) : 'show complete';
       if (nextTask) {
         var due = nextTask.at - t;
@@ -1255,7 +1312,7 @@
         clockEls.due.className = 'showclk__due mono' + (due < -RUNDOWN_WINDOW ? ' is-late' : (due <= 3 ? ' is-now' : ''));
       } else { clockEls.due.textContent = ''; clockEls.due.className = 'showclk__due mono'; }
     }
-    var RUNDOWN_WINDOW = 12;
+    var RUNDOWN_WINDOW = 35;   /* generous - this is about order, not reflexes */
 
     function renderTasks() {
       clear(taskPanel);
@@ -1269,8 +1326,10 @@
           el('div', { class: 'showclk__row' }, [timeEl, dueEl]),
           cueEl,
           clock.running || clock.done ? null : el('button', {
-            class: 'btn btn--go btn--sm btn--block', style: { marginTop: '10px' },
-            text: '▶  Start the show', onclick: startClock
+            class: 'btn btn--sm btn--block ' + (phaseOneDone() ? 'btn--go' : 'btn--ghost'),
+            style: { marginTop: '10px' },
+            text: phaseOneDone() ? '▶  Start the show' : 'Finish the setup first',
+            onclick: startClock
           })
         ]);
         taskPanel.appendChild(head);
@@ -1281,10 +1340,15 @@
 
       var list = el('div', { class: 'tasks' });
       var blocked = false;
+      var lastPhase = null;
       mission.tasks.forEach(function (t, i) {
         var done = !!doneTasks[t.id];
         var lock = mission.ordered && blocked && !done;
         if (mission.ordered && !done) blocked = true;
+        if (mission.phases && t.phase !== lastPhase) {
+          lastPhase = t.phase;
+          list.appendChild(el('div', { class: 'phasehead', text: mission.phases[t.phase - 1] }));
+        }
         var label = (mission.ordered ? (i + 1) + '. ' : '') + t.label;
         var row = w.UI.taskRow({
           label: label,
@@ -1292,7 +1356,7 @@
           spot: lock ? null : t.spot
         }, done, spotTask);
         if (lock) row.classList.add('is-lock');
-        if (mission.rundown) {
+        if (mission.rundown && t.phase === 2) {
           var cue = el('span', { class: 'cue mono', text: w.UI.fmtTime(t.at) });
           if (done && clock.hits[t.id] !== undefined) {
             var d = clock.hits[t.id] - t.at;
@@ -1323,20 +1387,56 @@
     /* "show me where" - open whatever palette or tab the task lives on,
        then pulse the control itself */
     function spotTask(t) {
+      if (!t) return;
       if (t.pre) { try { t.pre(s); } catch (e) {} }
       render();
-      setTimeout(function () { w.UI.spotlight(root, t.spot); }, 70);
+      setTimeout(function () {
+        if (!w.UI.spotlight(spotRoot(), t.spot, { persist: coachBox.auto })) {
+          w.UI.toast('That control is not on this screen yet - follow the hint first.', 'info');
+        }
+      }, 70);
+    }
+
+    function spotRoot() { return root.parentNode || root; }
+    function currentTask() {
+      for (var i = 0; i < mission.tasks.length; i++) {
+        if (!doneTasks[mission.tasks[i].id]) return mission.tasks[i];
+      }
+      return null;
+    }
+
+    /* keeps the pinned instruction, and the highlight, on the step you are
+       actually on - so you never have to hunt for the next control */
+    var coachBusy = false;
+    function applyCoach(force) {
+      var t = currentTask();
+      var idx = t ? mission.tasks.indexOf(t) : mission.tasks.length;
+      var changed = coachBox.set(t, idx, mission.tasks.length);
+      if (!t || !coachBox.auto) { if (!t) w.UI.spotlight(spotRoot(), null); return; }
+      if (mission.rundown && t.phase === 2 && !clock.running && !clock.done) {
+        coachBox.set({ id: 'wait', label: 'Setup done — press Start the show when you are ready.', hint: 'The clock only runs during the show itself.' }, idx, mission.tasks.length);
+        w.UI.spotlight(spotRoot(), '.showclk .btn', { persist: true, quiet: true, scroll: false });
+        return;
+      }
+      if ((changed || force) && !coachBusy) {
+        coachBusy = true;
+        if (t.pre) { try { t.pre(s); } catch (e) {} render(); }
+        coachBusy = false;
+        setTimeout(function () { w.UI.spotlight(spotRoot(), t.spot, { persist: true, quiet: true, scroll: false }); }, 60);
+      } else {
+        w.UI.spotlight(spotRoot(), t.spot, { persist: true, quiet: true, scroll: false });
+      }
     }
 
     function checkTasks() {
-      /* nothing counts until the show is actually rolling */
-      if (mission.rundown && !clock.running && !clock.done) return;
       var blocked = false;
       var newly = [];
       for (var i = 0; i < mission.tasks.length; i++) {
         var t = mission.tasks[i];
         if (doneTasks[t.id]) continue;
         if (mission.ordered && blocked) break;
+        /* the timed half does not start counting until you are rolling */
+        if (mission.rundown && t.phase === 2 && !clock.running && !clock.done) { blocked = true; continue; }
         var ok = false;
         try { ok = !!t.check(s, m); } catch (e) { ok = false; }
         if (ok) { doneTasks[t.id] = true; newly.push(t); }
@@ -1344,7 +1444,7 @@
       }
       newly.forEach(function (t) {
         Sound.good();
-        if (mission.rundown) {
+        if (mission.rundown && t.phase === 2) {
           var when = clockNow();
           clock.hits[t.id] = when;
           var d = when - t.at;
@@ -1360,22 +1460,23 @@
         if (mission.rundown) {
           stopClock();
           clock.done = true;
-          var onTime = mission.tasks.filter(function (t) {
+          var cues = mission.tasks.filter(function (t) { return t.phase === 2; });
+          var onTime = cues.filter(function (t) {
             return clock.hits[t.id] !== undefined && Math.abs(clock.hits[t.id] - t.at) <= RUNDOWN_WINDOW;
           }).length;
-          var total = mission.tasks.length;
-          var passed = onTime / total >= 0.8;
+          var total = cues.length;
+          var passed = onTime / total >= 0.6;
           renderTasks();
           setTimeout(function () {
             w.UI.modal({
               title: passed ? 'That is a show.' : 'You got through it.',
               body: el('div', {}, [
                 el('p', { class: 'lede', style: { fontSize: '15px', marginBottom: '14px' },
-                  text: onTime + ' of ' + total + ' cues hit on time, over ' + w.UI.fmtTime(clock.elapsed) + '.' }),
+                  text: onTime + ' of ' + total + ' cues inside their window, over ' + w.UI.fmtTime(clock.elapsed) + '.' }),
                 el('p', { class: 'muted', style: { fontSize: '13.5px' },
                   text: passed
                     ? 'Every beat landed and the timing held. That is what directing a live show feels like.'
-                    : 'You need 80% of the cues inside their window. Run it again - the running order is the same, so it is your timing that has to tighten up.' })
+                    : 'You need about two thirds of the cues within half a minute of their time. Run it again - the running order is the same.' })
               ]),
               actions: passed
                 ? [{ label: 'Take the final exam →', class: 'btn--primary' }]
@@ -1406,6 +1507,7 @@
       if (quiet) {
         if (s.tab === 'camera' && camRepaint) camRepaint();
         renderTasks();
+        applyCoach();
         return;
       }
       render();

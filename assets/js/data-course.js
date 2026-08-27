@@ -16,22 +16,18 @@
       note: 'The real box, unboxed and wired up.',
       /* placed as a fraction of the true runtime, read from the player */
       checkpoints: [
-        { at: 0.15, topic: 'The two rows',
+        { at: 0.55, from: 0.05, topic: 'The two rows',
           q: 'Which row of buttons is the one the audience actually sees?',
           opts: ['The red row', 'The green row', 'Both at once', 'Neither'],
           a: 0, why: 'Red is live. Green is what you have lined up next, and only you can see it.' },
-        { at: 0.40, topic: 'Cables',
+        { at: 0.75, from: 0.35, topic: 'Cables',
           q: 'How many cables run between the switcher and each camera?',
           opts: ['Two — one each way', 'One', 'Three', 'None, it is wireless'],
           a: 0, why: 'Picture in, and a second cable back so the operator sees the show and gets the red lamp.' },
-        { at: 0.65, topic: 'Picture format',
+        { at: 0.99, from: 0.60, topic: 'Setting up',
           q: 'A camera is set to a different picture format from the switcher. What happens?',
           opts: ['That input shows nothing at all', 'It is converted automatically', 'It looks slightly worse', 'A warning appears'],
-          a: 0, why: 'There is no conversion and no warning. Everything must be set to the same format.' },
-        { at: 0.88, topic: 'Streaming',
-          q: 'What does the switcher need in order to stream without a computer?',
-          opts: ['A network cable to the internet, and a stream key', 'A second laptop', 'A capture card', 'A USB microphone'],
-          a: 0, why: 'The streaming part is built into the box. The stream key is the password the site gives you.' }
+          a: 0, why: 'There is no conversion and no warning. Everything must be set to the same format.' }
       ]
     },
     extras: [
@@ -47,7 +43,7 @@
       steps: [
         { type: 'ponder', scene: 'flow', title: 'One picture leaves' },
         { type: 'video', title: 'See the real thing', video: 'primary',
-          intro: 'The video pauses four times for a quick question about what you have learned so far. You can rewatch any part as many times as you like.' }
+          intro: 'Watch the real thing being unboxed and wired up. It pauses three times, late on, for a quick check on what you have learned — and each one lets you jump back and rewatch that whole stretch.' }
       ] },
 
     { id: 'm02', n: '02', accent: 'info',

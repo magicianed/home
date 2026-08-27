@@ -161,8 +161,28 @@
 
     var root = el('div', { class: 'panelwrap' });
     var taskPanel = el('div', { class: 'card card--pad' });
-    var wrap = el('div', { class: 'simwrap simwrap--stack' }, [root, el('div', { class: 'simside' }, [taskPanel])]);
+    var coachBox = w.UI.coach({
+      root: root,
+      onSpot: function () { var t = currentDrill(); if (t) w.UI.spotlight(root, t.spot); },
+      onRefresh: function () { applyCoach(true); }
+    });
+    var wrap = el('div', { class: 'simwrap simwrap--stack' }, [
+      el('div', {}, [coachBox.el, root]),
+      el('div', { class: 'simside' }, [taskPanel])
+    ]);
     clear(host).appendChild(wrap);
+
+    function currentDrill() {
+      for (var i = 0; i < DRILLS.length; i++) if (!doneT[DRILLS[i].id]) return DRILLS[i];
+      return null;
+    }
+    function applyCoach() {
+      var t = currentDrill();
+      var idx = t ? DRILLS.indexOf(t) : DRILLS.length;
+      coachBox.set(t, idx, DRILLS.length);
+      if (!t) { w.UI.spotlight(root, null); return; }
+      if (coachBox.auto) w.UI.spotlight(root, t.spot, { persist: true, quiet: true, scroll: false });
+    }
 
     var tbarEl, tbarFill, tbarKnob, joyEl, joyPuck;
 
@@ -390,6 +410,7 @@
         el('div', { class: 'simprog__bar' }, [el('i', { style: { width: (n / DRILLS.length * 100) + '%' } })]),
         el('span', { class: 'mono', text: n + '/' + DRILLS.length })
       ]));
+      applyCoach();
     }
 
     function check() {

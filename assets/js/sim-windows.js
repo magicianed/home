@@ -86,19 +86,27 @@
       tasks: [
         { id: 'a', label: 'Open ATEM Setup', hint: 'The desktop icon marked BS.', spot: '.win__icons',
           check: function (c) { return c.opened.setup; } },
-        { id: 'b', label: 'Select your switcher', hint: 'Click it in the list down the left.', spot: '.bs__side',
+        { id: 'b', label: 'Select your switcher', hint: 'Click it in the list down the left.', spot: '.bs__dev',
           check: function (c) { return c.setup.selected; } },
-        { id: 'c', label: 'Rename it to Studio A HD8', hint: 'Type it into the Name box. A name you recognise beats the default.', spot: '.bs__pane .bsf__i',
+        { id: 'c', label: 'Rename it to Studio A HD8', hint: 'Type it into the Name box on the Setup tab.',
+          pre: function (c) { c.setup.tab = 'setup'; }, spot: '.bsf[data-f="name"]',
           check: function (c) { return c.setup.name === 'Studio A HD8'; } },
         { id: 'd', label: 'Set the picture format to 1080p50',
-          hint: 'It is on the Configure tab. 1080p50 is the European setting.', spot: '.bs__tabs',
+          hint: 'On the Configure tab, in Video Standard. 1080p50 is the European setting.',
+          pre: function (c) { c.setup.tab = 'configure'; }, spot: '.bsf[data-f="standard"]',
           check: function (c) { return c.setup.standard === '1080p50'; } },
-        { id: 'e', label: 'Give it a fixed network address instead of an automatic one', hint: 'On the Setup tab, choose Using Static IP.', spot: '.bsradio',
+        { id: 'e', label: 'Give it a fixed network address instead of an automatic one',
+          hint: 'On the Setup tab, choose Using Static IP.',
+          pre: function (c) { c.setup.tab = 'setup'; }, spot: '.bsradio',
           check: function (c) { return c.setup.dhcp === false; } },
-        { id: 'f', label: 'Set the IP to 192.168.10.240 with mask 255.255.255.0 and gateway 192.168.10.1',
-          hint: 'All three fields must be right.',
+        { id: 'f', label: 'Set the address to 192.168.10.240, mask 255.255.255.0, gateway 192.168.10.1',
+          hint: 'All three boxes have to match exactly.',
+          pre: function (c) { c.setup.tab = 'setup'; c.setup.dhcp = false; },
+          spot: '.bsf[data-f="ip"], .bsf[data-f="mask"], .bsf[data-f="gw"]',
           check: function (c) { return c.setup.ip === '192.168.10.240' && c.setup.mask === '255.255.255.0' && c.setup.gw === '192.168.10.1'; } },
-        { id: 'g', label: 'Set your monitor to show 10 pictures at once', hint: 'Multiview Layout, on the Configure tab.', spot: '.bs__tabs',
+        { id: 'g', label: 'Set your monitor to show 10 pictures at once',
+          hint: 'Multiview Layout, on the Configure tab.',
+          pre: function (c) { c.setup.tab = 'configure'; }, spot: '.bsf[data-f="mv"]',
           check: function (c) { return c.setup.mv === '10 up'; } },
         { id: 'h', label: 'Save the settings to the switcher', hint: 'Bottom right. The pictures will blink as it applies them.', spot: '.bs__foot',
           check: function (c) { return c.setup.saved; } }
@@ -143,10 +151,40 @@
     desktop.appendChild(taskbar);
 
     var taskPanel = el('div', { class: 'card card--pad' });
+    var coachBox = w.UI.coach({
+      root: desktop,
+      onSpot: function () { var t = currentTask(); if (t) spotTask(t); },
+      onRefresh: function () { applyCoach(true); }
+    });
     clear(host).appendChild(el('div', { class: 'simwrap' }, [
-      el('div', { class: 'winhost' }, [desktop]),
+      el('div', {}, [coachBox.el, el('div', { class: 'winhost' }, [desktop])]),
       el('div', { class: 'simside' }, [taskPanel])
     ]));
+
+    function currentTask() {
+      for (var i = 0; i < mission.tasks.length; i++) {
+        if (!doneT[mission.tasks[i].id]) return mission.tasks[i];
+      }
+      return null;
+    }
+    function rebuildAll() { Object.keys(wins).forEach(function (k) { rebuild(k); }); }
+    function spotTask(t) {
+      if (!t) return;
+      if (t.pre) { try { t.pre(c); rebuildAll(); } catch (e) {} }
+      setTimeout(function () {
+        if (!w.UI.spotlight(desktop, t.spot, { persist: coachBox.auto })) {
+          w.UI.toast('Not on screen yet - follow the hint first.', 'info');
+        }
+      }, 70);
+    }
+    function applyCoach(force) {
+      var t = currentTask();
+      var idx = t ? mission.tasks.indexOf(t) : mission.tasks.length;
+      var changed = coachBox.set(t, idx, mission.tasks.length);
+      if (!t || !coachBox.auto) { if (!t) w.UI.spotlight(desktop, null); return; }
+      if (t.pre && (changed || force)) { try { t.pre(c); rebuildAll(); } catch (e) {} }
+      setTimeout(function () { w.UI.spotlight(desktop, t.spot, { persist: true, quiet: true, scroll: false }); }, 60);
+    }
 
     /* ---------------- window manager ---------------- */
     function makeWindow(id, title, iconLabel, bodyBuilder, geom) {
@@ -393,8 +431,8 @@
       main.appendChild(tabs);
 
       var pane = el('div', { class: 'bs__pane' });
-      function field(label, node, note) {
-        return el('div', { class: 'bsf' }, [
+      function field(label, node, note, key) {
+        return el('div', { class: 'bsf', data: key ? { f: key } : null }, [
           el('label', { class: 'bsf__l', text: label }),
           node,
           note ? el('span', { class: 'bsf__n', text: note }) : null
@@ -413,26 +451,26 @@
       }
 
       if (st.tab === 'setup') {
-        pane.appendChild(field('Name', txt(st.name, function (v) { st.name = v; st.saved = false; }), 'Give every switcher on site a name you can recognise at a glance.'));
+        pane.appendChild(field('Name', txt(st.name, function (v) { st.name = v; st.saved = false; }), 'Give every switcher on site a name you can recognise at a glance.', 'name'));
         pane.appendChild(el('div', { class: 'bsf__l', text: 'Configure Address' }));
         pane.appendChild(el('div', { class: 'bsradio' }, [
           el('button', { class: 'bsr' + (st.dhcp ? ' is-on' : ''), text: 'Using DHCP', onclick: function () { st.dhcp = true; st.saved = false; Sound.tap(); check(); rebuild('setup'); } }),
           el('button', { class: 'bsr' + (!st.dhcp ? ' is-on' : ''), text: 'Using Static IP', onclick: function () { st.dhcp = false; st.saved = false; Sound.tap(); check(); rebuild('setup'); } })
         ]));
         if (!st.dhcp) {
-          pane.appendChild(field('IP Address', txt(st.ip, function (v) { st.ip = v; st.saved = false; }, '192.168.10.240')));
-          pane.appendChild(field('Subnet Mask', txt(st.mask, function (v) { st.mask = v; st.saved = false; }, '255.255.255.0')));
-          pane.appendChild(field('Gateway', txt(st.gw, function (v) { st.gw = v; st.saved = false; }, '192.168.10.1'), 'Required if the switcher is going to stream to the internet.'));
+          pane.appendChild(field('IP Address', txt(st.ip, function (v) { st.ip = v; st.saved = false; }, '192.168.10.240'), null, 'ip'));
+          pane.appendChild(field('Subnet Mask', txt(st.mask, function (v) { st.mask = v; st.saved = false; }, '255.255.255.0'), null, 'mask'));
+          pane.appendChild(field('Gateway', txt(st.gw, function (v) { st.gw = v; st.saved = false; }, '192.168.10.1'), 'Required if the switcher is going to stream to the internet.', 'gw'));
         } else {
           pane.appendChild(el('p', { class: 'phint', text: 'On DHCP the address can change between power cycles. For a permanent install, use a static address outside the DHCP pool.' }));
         }
       } else if (st.tab === 'configure') {
         pane.appendChild(field('Video Standard',
           sel(st.standard, ['720p50', '720p59.94', '1080i50', '1080i59.94', '1080p25', '1080p29.97', '1080p50', '1080p59.94', '1080p60'], function (v) { st.standard = v; st.saved = false; }),
-          'Every source must match this exactly. Changing it drops all inputs and stops any recording or stream.'));
+          'Every source must match this exactly. Changing it drops all inputs and stops any recording or stream.', 'standard'));
         pane.appendChild(field('Multiview Layout',
           sel(st.mv, ['4 up', '7 up', '10 up', '13 up', '16 up'], function (v) { st.mv = v; st.saved = false; }),
-          'Ten tiles covers eight inputs plus program and preview.'));
+          'Ten tiles covers eight inputs plus program and preview.', 'mv'));
         pane.appendChild(field('Talkback', sel('SDI + Headset', ['SDI + Headset', 'Headset only', 'Off'], function () {})));
       } else if (st.tab === 'audio') {
         pane.appendChild(field('XLR Input 1', sel('Mic', ['Mic', 'Line'], function () {})));
@@ -506,10 +544,7 @@
       var list = el('div', { class: 'tasks' });
       mission.tasks.forEach(function (t) {
         var d = !!doneT[t.id];
-        list.appendChild(w.UI.taskRow(t, d, function (tt) {
-          if (tt.pre) { try { tt.pre(c); } catch (e) {} }
-          setTimeout(function () { w.UI.spotlight(desktop, tt.spot); }, 70);
-        }));
+        list.appendChild(w.UI.taskRow(t, d, spotTask));
       });
       taskPanel.appendChild(list);
       var n = mission.tasks.filter(function (t) { return doneT[t.id]; }).length;
@@ -517,6 +552,7 @@
         el('div', { class: 'simprog__bar' }, [el('i', { style: { width: (n / mission.tasks.length * 100) + '%' } })]),
         el('span', { class: 'mono', text: n + '/' + mission.tasks.length })
       ]));
+      applyCoach();
     }
     function check() {
       var newly = [];
