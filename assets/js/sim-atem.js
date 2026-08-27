@@ -74,7 +74,7 @@
       inTransition: false,
       ftb: false,
       usk: [0, 1, 2, 3].map(function (i) {
-        return { onAir: false, type: 'chroma', fill: 5, keySrc: 0, sampled: false, spill: 50, edge: 50, fg: 50, bg: 50 };
+        return { onAir: false, type: 'luma', fill: 0, keySrc: 0, sampled: false, spill: 50, edge: 50, fg: 50, bg: 50 };
       }),
       dsk: [0, 1].map(function () {
         return { tie: false, onAir: false, fill: 3010, keySrc: 3011, pre: false, rate: 25 };
@@ -123,155 +123,245 @@
     switching: {
       title: 'Your first live cut',
       tasks: [
-        { id: 'a', label: 'Put Camera 1 on Program', hint: 'Click CAM 1 on the red program row.',
+        { id: 'a', label: 'Put Camera 1 on air',
+          hint: 'The red row is what the audience sees. Click CAM 1 on it.',
+          spot: '.me__row--pgm .xpt[data-src="1"]',
           check: function (s) { return s.program === 1; } },
-        { id: 'b', label: 'Line up Camera 2 on Preview', hint: 'Click CAM 2 on the green preview row.',
+        { id: 'b', label: 'Line up Camera 2 to go next',
+          hint: 'The green row is private - nobody sees it. Click CAM 2 there.',
+          spot: '.me__row--pvw .xpt[data-src="2"]',
           check: function (s) { return s.preview === 2; } },
-        { id: 'c', label: 'CUT to it', hint: 'Press the CUT button. Program and preview swap.',
+        { id: 'c', label: 'Press CUT to swap them',
+          hint: 'CUT switches instantly. Watch the two pictures trade places.',
+          spot: '.bigb--cut',
           check: function (s, m) { return m.cuts >= 1 && s.program === 2; } },
-        { id: 'd', label: 'Set the transition style to MIX and the rate to 12 frames',
-          hint: 'Transition style buttons, then the rate field in the Transitions palette.',
+        { id: 'd', label: 'Choose MIX, and set the length to 12',
+          hint: 'MIX fades one picture into the other. 12 frames is about half a second.',
+          spot: '.tcb--st[data-style="mix"], .tc__rate',
           check: function (s) { return s.style === 'mix' && s.rate === 12; } },
-        { id: 'e', label: 'Line up Camera 3 and AUTO to it', hint: 'Preview CAM 3, then press AUTO.',
+        { id: 'e', label: 'Line up Camera 3, then press AUTO',
+          hint: 'AUTO plays the fade for you, over the length you just set.',
+          spot: '.bigb--auto',
           check: function (s, m) { return m.autos >= 1 && s.program === 3; } },
-        { id: 'f', label: 'Perform a full manual transition with the fader bar',
-          hint: 'Drag the T-bar all the way from one end to the other.',
+        { id: 'f', label: 'Do one transition by hand with the fader bar',
+          hint: 'Drag the tall slider from one end to the other. Stop halfway and you will see both pictures at once.',
+          spot: '.tbar',
           check: function (s, m) { return m.tbarRuns >= 1; } },
-        { id: 'g', label: 'Fade to black, then bring the picture back',
-          hint: 'Press FTB once to go to black, and again to return.',
+        { id: 'g', label: 'Press FTB to go to black, then press it again to come back',
+          hint: 'FTB means Fade To Black. It kills picture and sound together - your emergency stop.',
+          spot: '.bigb--ftb',
           check: function (s, m) { return m.ftbCount >= 2 && !s.ftb; } }
       ]
     },
 
     keying: {
-      title: 'Transitions and keys',
+      title: 'Put a guest on a fake background, and a name on screen',
       tasks: [
-        { id: 'a', label: 'Select the WIPE transition style', hint: 'Transition style row, WIPE.',
+        { id: 'a', label: 'Choose the WIPE transition',
+          hint: 'WIPE slides one picture across the other instead of fading.',
+          spot: '.tcb--st[data-style="wipe"]',
           check: function (s) { return s.style === 'wipe'; } },
-        { id: 'b', label: 'Set Upstream Key 1 to Chroma and its fill to Green Screen',
-          hint: 'Open the Upstream Key palette, choose Chroma, set Fill Source.',
+        { id: 'b', label: 'Open Upstream Key 1, set it to CHROMA, and set Fill Source to Green Screen',
+          hint: 'A chroma key removes one colour from a picture. Upstream just means it happens early, before the transition.',
+          pre: function (s) { s.openPalette.usk = true; },
+          spot: '.pal[data-pal="usk"]',
           check: function (s) { return s.usk[0].type === 'chroma' && s.usk[0].fill === 5; } },
-        { id: 'c', label: 'Sample the green screen', hint: 'Press SAMPLE in the chroma key controls.',
+        { id: 'c', label: 'Press SAMPLE to tell it which green to remove',
+          hint: 'Until you sample, the switcher does not know what to delete - watch the picture when you do it.',
+          pre: function (s) { s.openPalette.usk = true; },
+          spot: '.sampler .btn',
           check: function (s) { return s.usk[0].sampled; } },
-        { id: 'd', label: 'Put the studio background on Program', hint: 'Program row: SLIDES.',
+        { id: 'd', label: 'Put the studio background on air - click Slides on the red row',
+          hint: 'This is the picture the guest will appear in front of.',
+          spot: '.me__row--pgm .xpt[data-src="7"]',
           check: function (s) { return s.program === 7; } },
-        { id: 'e', label: 'Put Upstream Key 1 on air', hint: 'ON AIR in the Upstream Key palette.',
+        { id: 'e', label: 'Turn the key ON AIR',
+          hint: 'The guest should now be standing in the background, with no green left.',
+          pre: function (s) { s.openPalette.usk = true; },
+          spot: '.pal[data-pal="usk"] .tgl',
           check: function (s) { return s.usk[0].onAir; } },
-        { id: 'f', label: 'Set DSK 1 fill to Media Player 1, key to Media Player 1 Key, and enable Pre Multiplied Key',
-          hint: 'Open the Downstream Key palette.',
+        { id: 'f', label: 'In Downstream Key 1 set Fill to Media Player 1, Key to Media Player 1 Key, and switch on Pre Multiplied Key',
+          hint: 'Fill is the picture. Key is the see-through part. Pre Multiplied stops a black outline appearing round the text.',
+          pre: function (s) { s.openPalette.dsk = true; },
+          spot: '.pal[data-pal="dsk"]',
           check: function (s) { return s.dsk[0].fill === 3010 && s.dsk[0].keySrc === 3011 && s.dsk[0].pre; } },
-        { id: 'g', label: 'Put DSK 1 on air', hint: 'ON AIR on the DSK 1 strip.',
+        { id: 'g', label: 'Turn Downstream Key 1 ON AIR',
+          hint: 'The name strip appears along the bottom. Downstream means last, so it sits over everything.',
+          spot: '.dskstrip[data-dsk="1"] .tcb--air',
           check: function (s) { return s.dsk[0].onAir; } },
-        { id: 'h', label: 'Arm KEY 1 in Next Transition and AUTO so the key transitions with the background',
-          hint: 'Click KEY 1 under NEXT TRANSITION, then AUTO.',
+        { id: 'h', label: 'Click KEY 1 under NEXT TRANSITION, then press AUTO',
+          hint: 'That makes the green-screen guest arrive with the transition, instead of popping on.',
+          spot: '.tcb--nt[data-nt="k1"]',
           check: function (s, m) { return m.autoWithKey >= 1; } }
       ]
     },
 
     audio: {
-      title: 'Mix the show',
+      title: 'Mix the sound',
       startTab: 'audio',
       tasks: [
-        { id: 'a', label: 'Set XLR Mic 1 to ON so the host is always heard',
-          hint: 'The ON / AFV / OFF buttons on the Mic 1 channel strip.',
+        { id: 'a', label: 'Set the host microphone to ON',
+          hint: 'ON means it is always heard, whichever camera is live.',
+          spot: '.strip[data-ch="mic1"] .stbtn--on',
           check: function (s) { return s.audio.ch.mic1.state === 'on'; } },
-        { id: 'b', label: 'Set Cameras 1, 2 and 3 to AFV', hint: 'Audio follows video on the camera channels.',
+        { id: 'b', label: 'Set Cameras 1, 2 and 3 to AFV',
+          hint: 'AFV is Audio Follows Video - that camera is only heard while it is on air.',
+          spot: '.strip[data-ch="in1"] .stbtn--afv, .strip[data-ch="in2"] .stbtn--afv, .strip[data-ch="in3"] .stbtn--afv',
           check: function (s) { return ['in1', 'in2', 'in3'].every(function (k) { return s.audio.ch[k].state === 'afv'; }); } },
-        { id: 'c', label: 'Turn the Green Screen camera audio OFF - it has no useful microphone',
-          hint: 'Channel for Green Screen, press OFF.',
+        { id: 'c', label: 'Set the Green Screen camera to OFF',
+          hint: 'It has no useful microphone, so it should never be heard.',
+          spot: '.strip[data-ch="in5"] .stbtn--off',
           check: function (s) { return s.audio.ch.in5.state === 'off'; } },
-        { id: 'd', label: 'Enable the high-pass filter on Mic 1',
-          hint: 'The HPF button on the Mic 1 strip - it clears rumble below 80 Hz.',
+        { id: 'd', label: 'Switch on HPF on the host microphone',
+          hint: 'HPF is a High Pass Filter. It removes the low rumble from air conditioning and footsteps.',
+          spot: '.strip[data-ch="mic1"]',
           check: function (s) { return s.audio.ch.mic1.hpf; } },
-        { id: 'e', label: 'Enable the limiter on Mic 1 as a safety net', hint: 'LIM on the Mic 1 strip.',
+        { id: 'e', label: 'Switch on LIM on the host microphone',
+          hint: 'LIM is a limiter. It catches a sudden loud noise before it distorts.',
+          spot: '.strip[data-ch="mic1"]',
           check: function (s) { return s.audio.ch.mic1.lim; } },
-        { id: 'f', label: 'Bring Mic 1 to a sensible level - between -12 dB and -4 dB',
-          hint: 'Drag the Mic 1 fader.',
+        { id: 'f', label: 'Set the host microphone level between -12 and -4',
+          hint: 'Drag its slider. The bar beside it shows how loud it is.',
+          spot: '.strip[data-ch="mic1"] .strip__fader',
           check: function (s) { return s.audio.ch.mic1.gain >= -12 && s.audio.ch.mic1.gain <= -4; } },
-        { id: 'g', label: 'Leave the master fader between -6 dB and 0 dB',
-          hint: 'The master strip on the right.',
+        { id: 'g', label: 'Leave the MASTER level between -6 and 0',
+          hint: 'Master is everything added together. Above 0 the sound breaks up.',
+          spot: '.strip--master .strip__fader',
           check: function (s) { return s.audio.master >= -6 && s.audio.master <= 0; } }
       ]
     },
 
     camera: {
-      title: 'Match the cameras',
+      title: 'Make two cameras look the same',
       startTab: 'camera',
       tasks: [
-        { id: 'a', label: 'Select Camera 2 in camera control', hint: 'The camera selector row at the top.',
+        { id: 'a', label: 'Click camera 2',
+          hint: 'You will see it side by side with camera 1, which is the one to match.',
+          spot: '.campick__b[data-cam="2"]',
           check: function (s) { return s.sel === 2; } },
-        { id: 'b', label: 'Set Camera 2 white balance to 3200K to match Camera 1',
-          hint: 'The white balance control. Camera 1 is on 3200K.',
+        { id: 'b', label: 'Camera 2 looks blue. Set White balance to 3200',
+          hint: 'White balance tells the camera what colour the room light is. Camera 1 is on 3200.',
+          spot: '.sl[data-sl="wb"]',
           check: function (s) { return s.cam[2].wb === 3200; } },
-        { id: 'c', label: 'Bring Camera 2 master black back to 0', hint: 'It is lifted at +12 - blacks look milky.',
+        { id: 'c', label: 'Its blacks look washed out. Set Black level back to 0',
+          hint: 'Black level decides how dark the shadows are. Lifted blacks look grey and foggy.',
+          spot: '.sl[data-sl="black"]',
           check: function (s) { return s.cam[2].black === 0; } },
-        { id: 'd', label: 'Open the iris on Camera 2 to f/5.6 to match exposure',
-          hint: 'Drag the iris control. It is closed down at f/8.',
+        { id: 'd', label: 'It is too dark. Open the iris to 5.6',
+          hint: 'A bigger f-number lets in less light. Camera 1 is on 5.6.',
+          spot: '.sl[data-sl="iris"]',
           check: function (s) { return Math.abs(s.cam[2].iris - 5.6) < 0.05; } },
-        { id: 'e', label: 'Remove the tint offset on Camera 2', hint: 'Tint should be 0.',
+        { id: 'e', label: 'Set Tint back to 0',
+          hint: 'Tint is a green or pink shift on top of the colour temperature.',
+          spot: '.sl[data-sl="tint"]',
           check: function (s) { return s.cam[2].tint === 0; } },
-        { id: 'f', label: 'Put Camera 2 on Preview and confirm its tally goes green',
-          hint: 'Back on the Switcher tab, preview CAM 2.',
+        { id: 'f', label: 'Go to the Switcher tab and line camera 2 up on the green row',
+          hint: 'Its tally marker turns green - that tells the operator they are next.',
+          pre: function (s) { s.tab = 'switcher'; },
+          spot: '.me__row--pvw .xpt[data-src="2"]',
           check: function (s) { return s.preview === 2; } },
-        { id: 'g', label: 'Cut Camera 2 to Program and confirm its tally goes red',
-          hint: 'Press CUT with CAM 2 on preview.',
+        { id: 'g', label: 'Press CUT so camera 2 goes live',
+          hint: 'Its tally marker turns red. Watch that it cuts cleanly against camera 1 now.',
+          pre: function (s) { s.tab = 'switcher'; },
+          spot: '.bigb--cut',
           check: function (s) { return s.program === 2; } }
       ]
     },
 
     stream: {
-      title: 'Go live, roll record',
+      title: 'Go live and record',
       tasks: [
-        { id: 'a', label: 'Set the streaming platform to YouTube', hint: 'Open the Streaming palette.',
+        { id: 'a', label: 'Open the Streaming panel and choose YouTube',
+          hint: 'The switcher sends the show straight to the internet on its own - no computer needed.',
+          pre: function (s) { s.openPalette.stream = true; },
+          spot: '.pal[data-pal="stream"]',
           check: function (s) { return s.stream.platform === 'YouTube'; } },
-        { id: 'b', label: 'Enter a stream key', hint: 'Paste anything at least 8 characters into the key field.',
+        { id: 'b', label: 'Paste a stream key',
+          hint: 'A stream key is the password YouTube gives you so it knows the video is yours. Type anything here.',
+          pre: function (s) { s.openPalette.stream = true; },
+          spot: '.pal[data-pal="stream"] .atxt',
           check: function (s) { return s.stream.key.length >= 8; } },
-        { id: 'c', label: 'The venue tests at 10 Mb/s upload - choose the 1080p 5 Mb/s quality',
-          hint: 'Roughly half of measured upload.',
+        { id: 'c', label: 'The venue upload speed is 10 Mb/s. Choose 1080p 5 Mb/s',
+          hint: 'Send at about half of what the internet connection can manage, so it never stutters.',
+          pre: function (s) { s.openPalette.stream = true; },
+          spot: '.pal[data-pal="stream"]',
           check: function (s) { return s.stream.quality === '1080p 5 Mb/s'; } },
-        { id: 'd', label: 'Select the exFAT SSD as the record disk', hint: 'Recording palette. One of the disks is NTFS - avoid it.',
+        { id: 'd', label: 'Open Recording and choose the SHOW_SSD (exFAT) drive',
+          hint: 'exFAT is a disk format both Windows and Mac can read. The other two will cause you trouble.',
+          pre: function (s) { s.openPalette.rec = true; },
+          spot: '.pal[data-pal="rec"]',
           check: function (s) { return s.rec.disk === 'SHOW_SSD (exFAT)'; } },
-        { id: 'f', label: 'Start recording', hint: 'The record button.',
+        { id: 'e', label: 'Press RECORD',
+          hint: 'Always start recording before you go live, not after.',
+          pre: function (s) { s.openPalette.rec = true; },
+          spot: '.recbtn',
           check: function (s, m) { return m.recStarted >= 1; } },
-        { id: 'g', label: 'Take the stream on air', hint: 'ON AIR in the Streaming palette.',
+        { id: 'f', label: 'Press ON AIR to start streaming',
+          hint: 'From here, everything on the red row is going out to the internet.',
+          pre: function (s) { s.openPalette.stream = true; },
+          spot: '.onair',
           check: function (s, m) { return m.streamStarted >= 1; } },
-        { id: 'h', label: 'Shut down cleanly: fade to black, stop the stream, then stop the record',
-          hint: 'Order matters - off air first, outputs last.',
+        { id: 'g', label: 'Finish properly: press FTB, then stop the stream, then stop the recording',
+          hint: 'That order matters. Get off air first, turn the outputs off last.',
+          spot: '.bigb--ftb',
           check: function (s, m) { return m.cleanShutdown; } }
       ]
     },
 
+    /* the final: a real rundown against a clock */
     showtime: {
       title: 'Run the show',
       ordered: true,
+      rundown: true,
+      preset: true,
       tasks: [
-        { id: '1', label: 'Holding slide on program', hint: 'Program row: SLIDES.',
+        { id: '1', at: 0, label: 'Holding slide up',
+          hint: 'Click Slides on the red row. The audience sees this while they arrive.',
+          spot: '.me__row--pgm .xpt[data-src="7"]',
           check: function (s) { return s.program === 7; } },
-        { id: '2', label: 'Select the exFAT disk and start recording',
-          hint: 'Recording palette: disk, then record.',
-          check: function (s, m) { return s.rec.disk === 'SHOW_SSD (exFAT)' && m.recStarted >= 1; } },
-        { id: '3', label: 'Set the stream to YouTube with a key and take it on air',
-          hint: 'Streaming palette.',
-          check: function (s, m) { return s.stream.platform === 'YouTube' && s.stream.key.length >= 8 && m.streamStarted >= 1; } },
-        { id: '4', label: 'Preview Camera 1 and take it with a MIX transition',
-          hint: 'Style MIX, preview CAM 1, then AUTO.',
-          check: function (s, m) { return s.program === 1 && m.autos >= 1 && s.style === 'mix'; } },
-        { id: '5', label: 'Bring the host lower third on with DSK 1',
-          hint: 'DSK 1 fill Media Player 1, key Media Player 1 Key, pre-multiplied, ON AIR.',
-          check: function (s) { return s.dsk[0].onAir && s.dsk[0].fill === 3010 && s.dsk[0].pre; } },
-        { id: '6', label: 'Take the lower third off again', hint: 'ON AIR off, or AUTO on the DSK strip.',
+        { id: '2', at: 10, label: 'Start recording',
+          hint: 'The drive is already chosen. Just press RECORD.',
+          pre: function (s) { s.openPalette.rec = true; },
+          spot: '.recbtn',
+          check: function (s, m) { return m.recStarted >= 1; } },
+        { id: '3', at: 20, label: 'Go live to YouTube',
+          hint: 'The key is already entered. Press ON AIR.',
+          pre: function (s) { s.openPalette.stream = true; },
+          spot: '.onair',
+          check: function (s, m) { return m.streamStarted >= 1; } },
+        { id: '4', at: 35, label: 'Fade up on Camera 1 for the welcome',
+          hint: 'Camera 1 on the green row, then AUTO.',
+          spot: '.bigb--auto',
+          check: function (s, m) { return s.program === 1 && m.autos >= 1; } },
+        { id: '5', at: 50, label: 'Name strip on for the host',
+          hint: 'Downstream Key 1 is already set up. Just press its ON AIR.',
+          spot: '.dskstrip[data-dsk="1"] .tcb--air',
+          check: function (s) { return s.dsk[0].onAir; } },
+        { id: '6', at: 65, label: 'Name strip off again',
+          hint: 'Eight seconds is plenty. Press ON AIR again.',
+          spot: '.dskstrip[data-dsk="1"] .tcb--air',
           check: function (s, m) { return m.dsk1Cycles >= 1 && !s.dsk[0].onAir; } },
-        { id: '7', label: 'Cut between Camera 2 and Camera 3 at least three times',
-          hint: 'Preview, cut, preview, cut.',
+        { id: '7', at: 85, label: 'Cut between Camera 2 and Camera 3 three times',
+          hint: 'Green row, CUT, green row, CUT. This is the discussion.',
+          spot: '.bigb--cut',
           check: function (s, m) { return m.discussionCuts >= 3; } },
-        { id: '8', label: 'Key the green screen guest over the studio background on Upstream Key 1',
-          hint: 'USK 1 chroma, fill Green Screen, sample, ON AIR.',
-          check: function (s) { return s.usk[0].onAir && s.usk[0].type === 'chroma' && s.usk[0].fill === 5 && s.usk[0].sampled; } },
-        { id: '9', label: 'Wipe to the wide shot', hint: 'Style WIPE, preview WIDE, AUTO.',
+        { id: '8', at: 115, label: 'Bring in the green-screen guest',
+          hint: 'Upstream Key 1 is already sampled. Turn it ON AIR.',
+          pre: function (s) { s.openPalette.usk = true; },
+          spot: '.pal[data-pal="usk"] .tgl',
+          check: function (s) { return s.usk[0].onAir; } },
+        { id: '9', at: 140, label: 'Wipe to the wide shot for the close',
+          hint: 'Choose WIPE, put WIDE on the green row, then AUTO.',
+          spot: '.tcb--st[data-style="wipe"]',
           check: function (s, m) { return s.program === 4 && m.wipeTakes >= 1; } },
-        { id: '10', label: 'Fade to black', hint: 'FTB.',
+        { id: '10', at: 160, label: 'Fade to black',
+          hint: 'FTB. You are off air.',
+          spot: '.bigb--ftb',
           check: function (s) { return s.ftb; } },
-        { id: '11', label: 'Stop the stream and then stop the record', hint: 'Outputs last, in that order.',
+        { id: '11', at: 170, label: 'Stop the stream, then stop the recording',
+          hint: 'In that order. Then the show exists on disk.',
+          pre: function (s) { s.openPalette.stream = true; s.openPalette.rec = true; },
+          spot: '.onair, .recbtn',
           check: function (s, m) { return m.cleanShutdown; } }
       ]
     }
@@ -285,11 +375,43 @@
     var mission = MISSIONS[opts.mission] || MISSIONS.switching;
     var s = freshState();
     initAudio(s); initCam(s);
-    if (opts.mission === 'keying' || opts.mission === 'showtime') {
+    if (opts.mission === 'keying' || mission.preset) {
       s.pool[0] = MEDIA_LIBRARY[0]; s.pool[1] = MEDIA_LIBRARY[3];
       s.players[0].slot = 0; s.players[1].slot = 1;
     }
+    /* the final is a directing test, not a setup test - the rig is already
+       built, exactly as it would be five minutes before doors */
+    if (mission.preset) {
+      s.stream.platform = 'YouTube';
+      s.stream.key = 'live-7f2a-9d31-c8b4';
+      s.stream.quality = '1080p 5 Mb/s';
+      s.rec.disk = 'SHOW_SSD (exFAT)';
+      s.dsk[0].fill = 3010; s.dsk[0].keySrc = 3011; s.dsk[0].pre = true;
+      s.usk[0].type = 'chroma'; s.usk[0].fill = 5; s.usk[0].sampled = true;
+      s.openPalette.rec = true; s.openPalette.stream = true;
+      s.program = 0; s.preview = 7;
+    }
     if (mission.startTab) s.tab = mission.startTab;
+
+    /* ---------- show clock (final only) ---------- */
+    var clock = { running: false, t0: 0, elapsed: 0, hits: {}, done: false, tick: null };
+    function clockNow() { return clock.running ? (Date.now() - clock.t0) / 1000 : clock.elapsed; }
+    function startClock() {
+      if (clock.running || clock.done) return;
+      clock.running = true;
+      clock.t0 = Date.now() - clock.elapsed * 1000;
+      clock.tick = setInterval(function () {
+        clock.elapsed = clockNow();
+        paintClock();
+      }, 250);
+      Sound.arm();
+      w.UI.toast('<b>You are on.</b> Follow the running order down the right.', 'brand', 3600);
+      renderTasks();
+    }
+    function stopClock() {
+      clock.running = false;
+      if (clock.tick) { clearInterval(clock.tick); clock.tick = null; }
+    }
 
     /* mission metrics - things that are events, not state */
     var m = {
@@ -417,11 +539,10 @@
 
     /* ---------- monitors / multiview ---------- */
     var mvEls = null;
-    function tile(id, label, big) {
-      var lk = LOOK[id] || LOOK[0];
-      var t = el('div', { class: 'mvt' + (big ? ' mvt--big' : '') });
-      var scr = el('div', { class: 'mvt__scr', style: { background: lk.bg } });
-      scr.appendChild(el('div', { class: 'mvt__cap', style: { color: lk.ink }, text: lk.cap }));
+    function tile(id, label) {
+      var t = el('div', { class: 'mvt' });
+      var scr = el('div', { class: 'mvt__scr' });
+      scr.appendChild(w.Pic.make({ src: id, st: s, grade: s.cam[id] }));
       t.appendChild(scr);
       t.appendChild(el('div', { class: 'mvt__lbl', text: label || src(id).short }));
       return t;
@@ -436,37 +557,46 @@
       paintMonitors();
       return whole;
     }
-    function bigMon(node, id, tag, keys) {
+    function bigMon(node, pic, tag, label, notes) {
       clear(node);
-      var lk = LOOK[id] || LOOK[0];
-      var scr = el('div', { class: 'mvbig__scr', style: { background: lk.bg } });
-      scr.appendChild(el('div', { class: 'mvbig__cap', style: { color: lk.ink }, text: lk.cap }));
-      (keys || []).forEach(function (k) { scr.appendChild(k); });
+      var scr = el('div', { class: 'mvbig__scr' });
+      scr.appendChild(pic);
+      (notes || []).forEach(function (n) { scr.appendChild(n); });
       node.appendChild(scr);
       node.appendChild(el('div', { class: 'mvbig__lbl' }, [
         el('span', { class: 'mvbig__tag', text: tag }),
-        el('span', { text: srcName(id) })
+        el('span', { text: label })
       ]));
     }
     function paintMonitors() {
       if (!mvEls) return;
-      /* program picture accounting for FTB, transition and keys */
-      var pgmId = s.program;
-      var overlays = [];
-      if (s.usk[0].onAir) {
-        overlays.push(el('div', { class: 'ovl ovl--key', text: s.usk[0].type === 'chroma' && s.usk[0].sampled ? 'KEYED: ' + src(s.usk[0].fill).short : 'KEY 1' }));
-      }
-      s.dsk.forEach(function (d, i) {
-        if (d.onAir) overlays.push(el('div', { class: 'ovl ovl--dsk', text: 'DSK ' + (i + 1) + ' - ' + (s.players[0].slot >= 0 && s.pool[s.players[0].slot] ? s.pool[s.players[0].slot].name : 'no media') }));
+
+      /* ---- what is actually going out ---- */
+      var notes = [];
+      if (s.inTransition) notes.push(el('div', { class: 'ovl ovl--trans', text: s.style.toUpperCase() + '  ' + Math.round(s.tbar * 100) + '%' }));
+      var pgmPic = w.Pic.make({
+        src: s.program,
+        st: s,
+        ftb: s.ftb,
+        mix: s.tbar > 0 ? { to: s.preview, t: s.tbar } : null,
+        usk: s.usk[0],
+        dsk: s.dsk,
+        grade: s.cam[s.program]
       });
-      if (s.inTransition) overlays.push(el('div', { class: 'ovl ovl--trans', text: s.style.toUpperCase() + '  ' + Math.round(s.tbar * 100) + '%' }));
-      if (s.ftb) { pgmId = 0; overlays = [el('div', { class: 'ovl ovl--ftb', text: 'FADE TO BLACK' })]; }
-      bigMon(mvEls.pg, pgmId, 'PGM', overlays);
-      bigMon(mvEls.pv, s.preview, 'PVW', s.usk[0].onAir ? [] : []);
+      var pgmLabel = s.ftb ? 'Black' : srcName(s.program);
+      if (!s.ftb && s.usk[0].onAir) pgmLabel += ' + key';
+      if (!s.ftb && (s.dsk[0].onAir || s.dsk[1].onAir)) pgmLabel += ' + graphic';
+      bigMon(mvEls.pg, pgmPic, 'ON AIR', pgmLabel, notes);
+
+      /* preview shows the background and any upstream key, never the
+         downstream graphics - which is the lesson */
+      var pvwPic = w.Pic.make({ src: s.preview, st: s, usk: s.usk[0], grade: s.cam[s.preview] });
+      bigMon(mvEls.pv, pvwPic, 'NEXT UP', srcName(s.preview),
+        (s.dsk[0].onAir || s.dsk[1].onAir) ? [el('div', { class: 'ovl ovl--dsk', text: 'graphic is on air but never shows here' })] : []);
 
       clear(mvEls.strip);
       for (var i = 1; i <= 8; i++) {
-        var t = tile(i, src(i).short + '  ' + src(i).long.toUpperCase());
+        var t = tile(i, src(i).long);
         if (s.program === i && !s.ftb) t.classList.add('is-pgm');
         else if (s.preview === i) t.classList.add('is-pvw');
         mvEls.strip.appendChild(t);
@@ -486,7 +616,7 @@
       var on = isProgram ? (s.program === o.id) : (s.preview === o.id);
       var b = el('button', {
         class: 'xpt' + (isProgram ? ' xpt--pgm' : ' xpt--pvw') + (on ? ' is-on' : ''),
-        title: o.long
+        title: o.long, data: { src: String(o.id) }
       }, [
         el('span', { class: 'xpt__lbl', text: o.short }),
         el('span', { class: 'xpt__long', text: o.long })
@@ -531,7 +661,7 @@
       var ntRow = el('div', { class: 'tc__btns' });
       [['bkgd', 'BKGD'], ['k1', 'KEY 1'], ['k2', 'KEY 2'], ['k3', 'KEY 3'], ['k4', 'KEY 4']].forEach(function (p) {
         ntRow.appendChild(el('button', {
-          class: 'tcb tcb--nt' + (s.next[p[0]] ? ' is-on' : ''), text: p[1],
+          class: 'tcb tcb--nt' + (s.next[p[0]] ? ' is-on' : ''), text: p[1], data: { nt: p[0] },
           onclick: function () { s.next[p[0]] = !s.next[p[0]]; Sound.tap(); after(); }
         }));
       });
@@ -546,7 +676,7 @@
       var stRow = el('div', { class: 'tc__btns' });
       [['mix', 'MIX'], ['dip', 'DIP'], ['wipe', 'WIPE'], ['sting', 'STING'], ['dve', 'DVE']].forEach(function (p) {
         stRow.appendChild(el('button', {
-          class: 'tcb tcb--st' + (s.style === p[0] ? ' is-on' : ''), text: p[1],
+          class: 'tcb tcb--st' + (s.style === p[0] ? ' is-on' : ''), text: p[1], data: { style: p[0] },
           onclick: function () { s.style = p[0]; Sound.tap(); after(); }
         }));
       });
@@ -608,7 +738,7 @@
       /* DSK strips + FTB */
       var dskBlock = el('div', { class: 'tc__block tc__block--dsk' });
       s.dsk.forEach(function (d, i) {
-        var strip = el('div', { class: 'dskstrip' }, [
+        var strip = el('div', { class: 'dskstrip', data: { dsk: String(i + 1) } }, [
           el('div', { class: 'tc__lbl', text: 'DSK ' + (i + 1) }),
           el('button', { class: 'tcb' + (d.tie ? ' is-on' : ''), text: 'TIE', onclick: function () { d.tie = !d.tie; Sound.tap(); after(); } }),
           el('button', {
@@ -652,7 +782,7 @@
         el('span', { class: 'pal__chev', text: open ? '\u2212' : '+' })
       ]);
       head.onclick = function () { s.openPalette[key] = !open; Sound.tap(); render(); };
-      var p = el('div', { class: 'pal' }, [head]);
+      var p = el('div', { class: 'pal', data: { pal: key } }, [head]);
       if (open) p.appendChild(el('div', { class: 'pal__body' }, content()));
       return p;
     }
@@ -900,7 +1030,7 @@
       return col;
     }
 
-    function slider(label, val, min, max, onChange, unit, step) {
+    function slider(label, val, min, max, onChange, unit, step, key) {
       var out = el('span', { class: 'sl__v mono', text: val + (unit || '') });
       var inp = el('input', {
         class: 'sl__i', type: 'range', min: String(min), max: String(max), step: String(step || 1), value: String(val)
@@ -910,7 +1040,7 @@
         out.textContent = v + (unit || '');
         onChange(v); after(true);
       };
-      return el('div', { class: 'sl' }, [
+      return el('div', { class: 'sl', data: key ? { sl: key } : null }, [
         el('span', { class: 'sl__l', text: label }), inp, out
       ]);
     }
@@ -970,7 +1100,7 @@
         var c = s.audio.ch[k];
         if (!c) return;
         var live = (c.state === 'on') || (c.state === 'afv' && isOnAir(k));
-        var strip = el('div', { class: 'strip' + (live ? ' is-live' : '') }, [
+        var strip = el('div', { class: 'strip' + (live ? ' is-live' : ''), data: { ch: k } }, [
           el('div', { class: 'strip__n', text: c.name }),
           el('div', { class: 'strip__meter' }, [
             el('i', { class: 'strip__mfill', style: { height: (live ? meterFor(c) : 3) + '%' } })
@@ -1039,6 +1169,7 @@
     function fmtDb(v) { return (v > 0 ? '+' : '') + v + '.0'; }
 
     /* ---------- camera tab ---------- */
+    var camRepaint = null;
     function renderCamera() {
       var pane = el('div', { class: 'camtab' });
       var picker = el('div', { class: 'campick' });
@@ -1046,7 +1177,7 @@
         (function (n) {
           picker.appendChild(el('button', {
             class: 'campick__b' + (s.sel === n ? ' is-on' : '') + (s.program === n ? ' is-pgm' : '') + (s.preview === n ? ' is-pvw' : ''),
-            text: String(n),
+            text: String(n), data: { cam: String(n) },
             onclick: function () { s.sel = n; Sound.tap(); after(); }
           }));
         })(i);
@@ -1057,53 +1188,125 @@
       ]));
 
       var c = s.cam[s.sel];
-      var lk = LOOK[s.sel] || LOOK[0];
-      var mon = el('div', { class: 'cammon', style: { background: lk.bg } }, [
-        el('div', { class: 'cammon__cap', style: { color: lk.ink }, text: lk.cap }),
-        el('div', { class: 'cammon__tally' + (s.program === s.sel ? ' is-pgm' : (s.preview === s.sel ? ' is-pvw' : '')) },
-          [s.program === s.sel ? 'ON AIR' : (s.preview === s.sel ? 'PREVIEW' : 'OFF')]),
-        el('div', { class: 'cammon__ex', style: { opacity: String(w.UI.clamp(0.15 + (8 - c.iris) / 12, 0, 0.85)) } })
-      ]);
+
+      /* side by side, so you can actually see the match happen */
+      var refMon = el('div', { class: 'cammon' });
+      var liveMon = el('div', { class: 'cammon' });
+      var verdict = el('div', { class: 'cammatch' });
+
+      camRepaint = function () {
+        var cc = s.cam[s.sel];
+        clear(refMon);
+        refMon.appendChild(w.Pic.make({ src: 1, st: s, grade: s.cam[1] }));
+        refMon.appendChild(el('div', { class: 'cammon__tag', text: 'CAMERA 1 — the one you are matching to' }));
+
+        clear(liveMon);
+        liveMon.appendChild(w.Pic.make({ src: s.sel, st: s, grade: cc }));
+        liveMon.appendChild(el('div', { class: 'cammon__tag', text: 'CAMERA ' + s.sel + ' — the one you are adjusting' }));
+        liveMon.appendChild(el('div', {
+          class: 'cammon__tally' + (s.program === s.sel ? ' is-pgm' : (s.preview === s.sel ? ' is-pvw' : '')),
+          text: s.program === s.sel ? 'LIVE' : (s.preview === s.sel ? 'NEXT UP' : 'not on air')
+        }));
+
+        var r = s.cam[1];
+        var off = [];
+        if (Math.abs(cc.wb - r.wb) > 60) off.push(cc.wb > r.wb ? 'too blue' : 'too orange');
+        if (Math.abs(cc.black - r.black) > 0.5) off.push(cc.black > r.black ? 'blacks washed out' : 'blacks crushed');
+        if (Math.abs(cc.iris - r.iris) > 0.15) off.push(cc.iris > r.iris ? 'too dark' : 'too bright');
+        if (Math.abs(cc.tint - r.tint) > 0.5) off.push('tint is off');
+        clear(verdict);
+        if (s.sel === 1) verdict.appendChild(el('span', { class: 'chip', text: 'This is the reference camera' }));
+        else if (!off.length) verdict.appendChild(el('span', { class: 'chip chip--pvw', text: '✓ Matched — they will cut together cleanly' }));
+        else off.forEach(function (o) { verdict.appendChild(el('span', { class: 'chip chip--pgm', text: o })); });
+      };
 
       var ctrls = el('div', { class: 'camctrl' }, [
-        slider('Iris (f-stop)', c.iris, 1.8, 16, function (v) { c.iris = v; }, '', 0.1),
-        slider('Master Black', c.black, -20, 40, function (v) { c.black = v; }),
-        slider('White Balance', c.wb, 2500, 10000, function (v) { c.wb = v; }, 'K', 100),
-        slider('Tint', c.tint, -20, 20, function (v) { c.tint = v; }),
-        slider('Gain (dB)', c.gain, -6, 24, function (v) { c.gain = v; }),
-        slider('Shutter (deg)', c.shutter, 45, 360, function (v) { c.shutter = v; }, '', 5),
-        slider('Gamma', c.gamma, -50, 50, function (v) { c.gamma = v; }),
-        slider('Saturation', c.sat, 0, 2, function (v) { c.sat = v; }, '', 0.05)
+        el('div', { class: 'camctrl__t', text: 'Colour temperature — how warm or cool the picture looks. Camera 1 is on 3200.' }),
+        slider('White balance', c.wb, 2500, 10000, function (v) { c.wb = v; }, 'K', 100, 'wb'),
+        el('div', { class: 'camctrl__t', text: 'Black level — how dark the shadows are. Too high and the picture looks washed out.' }),
+        slider('Black level', c.black, -20, 40, function (v) { c.black = v; }, '', 1, 'black'),
+        el('div', { class: 'camctrl__t', text: 'Iris — how much light the lens lets in. A bigger f-number means a darker picture.' }),
+        slider('Iris (f-number)', c.iris, 1.8, 16, function (v) { c.iris = v; }, '', 0.1, 'iris'),
+        el('div', { class: 'camctrl__t', text: 'Tint — a green or magenta shift on top of the colour temperature.' }),
+        slider('Tint', c.tint, -20, 20, function (v) { c.tint = v; }, '', 1, 'tint')
       ]);
 
-      pane.appendChild(el('div', { class: 'camgrid' }, [mon, ctrls]));
-      pane.appendChild(el('div', { class: 'camref' }, [
-        el('span', { class: 'phint', text: 'Reference - Camera 1: f/5.6, black 0, 3200K, tint 0. Match camera 2 to it.' })
+      pane.appendChild(el('div', { class: 'camgrid' }, [
+        el('div', { class: 'camgrid__mons' }, [refMon, liveMon, verdict]),
+        ctrls
       ]));
+      camRepaint();
       return pane;
     }
 
     /* ============================================================
        tasks
        ============================================================ */
+    var clockEls = null;
+    function paintClock() {
+      if (!clockEls) return;
+      var t = clockNow();
+      clockEls.time.textContent = w.UI.fmtTime(t);
+      var nextTask = mission.tasks.filter(function (x) { return !doneTasks[x.id]; })[0];
+      clockEls.cue.textContent = nextTask ? 'cue at ' + w.UI.fmtTime(nextTask.at) : 'show complete';
+      if (nextTask) {
+        var due = nextTask.at - t;
+        clockEls.due.textContent = due > 0 ? 'in ' + Math.ceil(due) + 's' : Math.round(-due) + 's late';
+        clockEls.due.className = 'showclk__due mono' + (due < -RUNDOWN_WINDOW ? ' is-late' : (due <= 3 ? ' is-now' : ''));
+      } else { clockEls.due.textContent = ''; clockEls.due.className = 'showclk__due mono'; }
+    }
+    var RUNDOWN_WINDOW = 12;
+
     function renderTasks() {
       clear(taskPanel);
-      taskPanel.appendChild(el('div', { class: 'simside__t', text: 'Tasks - ' + mission.title }));
+
+      if (mission.rundown) {
+        var timeEl = el('span', { class: 'showclk__t mono', text: w.UI.fmtTime(clockNow()) });
+        var cueEl = el('span', { class: 'showclk__c mono' });
+        var dueEl = el('span', { class: 'showclk__due mono' });
+        clockEls = { time: timeEl, cue: cueEl, due: dueEl };
+        var head = el('div', { class: 'showclk' }, [
+          el('div', { class: 'showclk__row' }, [timeEl, dueEl]),
+          cueEl,
+          clock.running || clock.done ? null : el('button', {
+            class: 'btn btn--go btn--sm btn--block', style: { marginTop: '10px' },
+            text: '▶  Start the show', onclick: startClock
+          })
+        ]);
+        taskPanel.appendChild(head);
+        taskPanel.appendChild(el('div', { class: 'simside__t', style: { marginTop: '14px' }, text: 'Running order' }));
+      } else {
+        taskPanel.appendChild(el('div', { class: 'simside__t', text: 'Tasks — ' + mission.title }));
+      }
+
       var list = el('div', { class: 'tasks' });
       var blocked = false;
       mission.tasks.forEach(function (t, i) {
         var done = !!doneTasks[t.id];
         var lock = mission.ordered && blocked && !done;
         if (mission.ordered && !done) blocked = true;
-        list.appendChild(el('div', { class: 'task' + (done ? ' is-done' : '') + (lock ? ' is-lock' : '') }, [
-          el('i', { class: 'task__box', text: '\u2713' }),
-          el('div', { class: 'grow' }, [
-            el('span', { text: (mission.ordered ? (i + 1) + '. ' : '') + t.label }),
-            !done && !lock ? el('span', { class: 'task__hint', text: t.hint }) : null
-          ])
-        ]));
+        var label = (mission.ordered ? (i + 1) + '. ' : '') + t.label;
+        var row = w.UI.taskRow({
+          label: label,
+          hint: lock ? '' : t.hint,
+          spot: lock ? null : t.spot
+        }, done, spotTask);
+        if (lock) row.classList.add('is-lock');
+        if (mission.rundown) {
+          var cue = el('span', { class: 'cue mono', text: w.UI.fmtTime(t.at) });
+          if (done && clock.hits[t.id] !== undefined) {
+            var d = clock.hits[t.id] - t.at;
+            var late = Math.abs(d) > RUNDOWN_WINDOW;
+            cue.textContent = (late ? (d > 0 ? '+' : '') + Math.round(d) + 's' : 'on time');
+            cue.classList.add(late ? 'is-late' : 'is-ontime');
+          }
+          row.insertBefore(cue, row.firstChild);
+          row.classList.add('task--cued');
+        }
+        list.appendChild(row);
       });
       taskPanel.appendChild(list);
+      if (mission.rundown) paintClock();
 
       var n = mission.tasks.filter(function (t) { return doneTasks[t.id]; }).length;
       taskPanel.appendChild(el('div', { class: 'simprog' }, [
@@ -1117,7 +1320,17 @@
       }
     }
 
+    /* "show me where" - open whatever palette or tab the task lives on,
+       then pulse the control itself */
+    function spotTask(t) {
+      if (t.pre) { try { t.pre(s); } catch (e) {} }
+      render();
+      setTimeout(function () { w.UI.spotlight(root, t.spot); }, 70);
+    }
+
     function checkTasks() {
+      /* nothing counts until the show is actually rolling */
+      if (mission.rundown && !clock.running && !clock.done) return;
       var blocked = false;
       var newly = [];
       for (var i = 0; i < mission.tasks.length; i++) {
@@ -1131,13 +1344,52 @@
       }
       newly.forEach(function (t) {
         Sound.good();
-        w.UI.toast('<b>Task complete</b> &nbsp;' + w.UI.esc(t.label), 'ok', 2200);
+        if (mission.rundown) {
+          var when = clockNow();
+          clock.hits[t.id] = when;
+          var d = when - t.at;
+          var late = Math.abs(d) > RUNDOWN_WINDOW;
+          w.UI.toast((late ? '<b>' + (d > 0 ? 'Late.</b> ' : 'Early.</b> ') : '<b>On time.</b> ') + w.UI.esc(t.label),
+            late ? 'bad' : 'ok', 2000);
+        } else {
+          w.UI.toast('<b>Done</b> &nbsp;' + w.UI.esc(t.label), 'ok', 2200);
+        }
       });
+
       if (!finished && mission.tasks.length && mission.tasks.every(function (t) { return doneTasks[t.id]; })) {
+        if (mission.rundown) {
+          stopClock();
+          clock.done = true;
+          var onTime = mission.tasks.filter(function (t) {
+            return clock.hits[t.id] !== undefined && Math.abs(clock.hits[t.id] - t.at) <= RUNDOWN_WINDOW;
+          }).length;
+          var total = mission.tasks.length;
+          var passed = onTime / total >= 0.8;
+          renderTasks();
+          setTimeout(function () {
+            w.UI.modal({
+              title: passed ? 'That is a show.' : 'You got through it.',
+              body: el('div', {}, [
+                el('p', { class: 'lede', style: { fontSize: '15px', marginBottom: '14px' },
+                  text: onTime + ' of ' + total + ' cues hit on time, over ' + w.UI.fmtTime(clock.elapsed) + '.' }),
+                el('p', { class: 'muted', style: { fontSize: '13.5px' },
+                  text: passed
+                    ? 'Every beat landed and the timing held. That is what directing a live show feels like.'
+                    : 'You need 80% of the cues inside their window. Run it again - the running order is the same, so it is your timing that has to tighten up.' })
+              ]),
+              actions: passed
+                ? [{ label: 'Take the final exam →', class: 'btn--primary' }]
+                : [{ label: 'Run it again', class: 'btn--primary', onClick: function () { location.reload(); } }]
+            });
+            if (passed && opts.onComplete) opts.onComplete();
+          }, 500);
+          finished = true;
+          return;
+        }
         finished = true;
         Sound.good();
         setTimeout(function () {
-          w.UI.toast('<b>Simulation passed.</b> Every task checked against live switcher state.', 'brand', 4200);
+          w.UI.toast('<b>Level cleared.</b> Checked against real switcher state, not clicks.', 'brand', 4200);
           if (opts.onComplete) opts.onComplete();
         }, 380);
       }
@@ -1151,12 +1403,16 @@
       checkTasks();
       paintMonitors();
       if (opts.onChange) opts.onChange(s, m);
-      if (quiet) { renderTasks(); return; }
+      if (quiet) {
+        if (s.tab === 'camera' && camRepaint) camRepaint();
+        renderTasks();
+        return;
+      }
       render();
     }
 
     render();
-    return { state: s, destroy: function () { clear(host); } };
+    return { state: s, destroy: function () { stopClock(); clear(host); } };
   }
 
   w.SimATEM = { mount: mount, MISSIONS: MISSIONS, SRC: SRC, MEDIA_LIBRARY: MEDIA_LIBRARY, LOOK: LOOK };

@@ -20,7 +20,7 @@
              pgm: 'var(--pgm)', pvw: 'var(--pvw)', iso: 'var(--iso)' }[a] || 'var(--brand)';
   }
   function stepIcon(t) { return { ponder: '◆', video: '▶', sim: '⚑', quiz: '★' }[t] || '•'; }
-  function stepKind(t) { return { ponder: 'Ponder', video: 'Watch', sim: 'Play', quiz: 'Exam' }[t] || 'Step'; }
+  function stepKind(t) { return { ponder: 'Watch', video: 'Video', sim: 'Do it', quiz: 'Check' }[t] || 'Step'; }
 
   function render(host, mod, stepIdx) {
     destroyLive();
@@ -68,6 +68,13 @@
 
     var canAdvance = w.State.isStepDone(mod.id, stepIdx);
 
+    function advance() {
+      var idx = w.COURSE.index(mod.id);
+      if (stepIdx < mod.steps.length - 1) { w.go('#/m/' + mod.id + '/' + (stepIdx + 1)); return; }
+      if (idx < w.COURSE.modules.length - 1) { w.go('#/m/' + w.COURSE.modules[idx + 1].id + '/0'); return; }
+      if (w.COURSE.allDone()) w.go('#/certificate');
+    }
+
     function complete(msg) {
       if (w.State.markStep(mod.id, stepIdx)) {
         var gained = XP[step.type] || 50;
@@ -96,7 +103,10 @@
     /* ---- build the step ---- */
     if (step.type === 'ponder') {
       var scene = w.SCENES[step.scene];
-      live = w.Ponder.mount(bodyHost, scene, { onComplete: function () { complete('<b>Ponder done.</b>'); } });
+      live = w.Ponder.mount(bodyHost, scene, {
+        onComplete: function () { complete('<b>Watched.</b>'); },
+        onNext: advance
+      });
     } else if (step.type === 'video') {
       bodyHost.appendChild(el('p', { class: 'lvintro', text: step.intro }));
       var vh = el('div');
@@ -149,7 +159,7 @@
   function gateMsg(step) {
     if (step.type === 'ponder') return 'Watch it through to unlock the next step.';
     if (step.type === 'video') return 'Answer every checkpoint to unlock the next step.';
-    if (step.type === 'quiz') return 'Pass to earn your certificate.';
+    if (step.type === 'quiz') return step.mustAll ? 'Every answer has to be right to move on.' : 'Pass to earn your certificate.';
     return 'Finish every task to clear this level.';
   }
 
@@ -158,10 +168,11 @@
      ============================================================ */
   function renderQuiz(mod, step, complete) {
     var box = el('div', { class: 'quiz' });
+    if (step.intro) box.appendChild(el('p', { class: 'lvintro', text: step.intro }));
     var pass = step.pass || 0.8;
     var seed = Date.now() % 100000;
     var qs = w.QUIZ.pick(step.bank, step.count || 14, seed);
-    var i = 0, right = 0, streak = 0, best = 0, answered = false;
+    var i = 0, right = 0, streak = 0, best = 0, answered = false, missed = [];
 
     var progRow = el('div', { class: 'quiz__prog' });
     var qHost = el('div');
@@ -196,7 +207,7 @@
           var ok = origIdx === q.a;
           if (ok) { right++; streak++; best = Math.max(best, streak); b.classList.add('is-right'); Sound.good(); }
           else {
-            streak = 0;
+            streak = 0; missed.push(q);
             b.classList.add('is-wrong', 'shake');
             Sound.bad();
             w.UI.qsa('.opt', optBox).forEach(function (o, k) { if (order[k] === q.a) o.classList.add('is-right'); });
@@ -218,7 +229,7 @@
     function paintResult() {
       clear(qHost);
       var pctv = right / qs.length;
-      var passed = pctv >= pass;
+      var passed = step.mustAll ? (right === qs.length) : (pctv >= pass);
       w.State.recordQuiz(step.bank, pctv, passed);
       var res = el('div', { class: 'result' });
       var ring = el('div', { class: 'result__ring' });
@@ -230,16 +241,50 @@
         var c = ring.querySelector('.result__fill');
         if (c) c.style.strokeDashoffset = String(314 * (1 - pctv));
       }, 60);
-      res.appendChild(el('h2', { class: 'h2', style: { marginBottom: '10px' }, text: passed ? 'Certified.' : 'Not yet.' }));
-      res.appendChild(el('p', { class: 'lede', style: { margin: '0 auto 26px' },
-        text: right + ' of ' + qs.length + (best >= 4 ? ' · best streak ' + best : '') +
-          (passed ? '. That is an operator.' : '. You need ' + Math.ceil(pass * qs.length) + '. The questions reshuffle - go again.') }));
-      res.appendChild(el('div', { class: 'row center gap-10 wrap', style: { justifyContent: 'center' } }, [
-        el('button', { class: 'btn ' + (passed ? 'btn--ghost' : 'btn--primary'), text: 'Retake',
-          onclick: function () { i = 0; right = 0; streak = 0; best = 0; seed = Date.now() % 100000; qs = w.QUIZ.pick(step.bank, step.count || 14, seed); paintQ(); } })
+      res.appendChild(el('h2', { class: 'h2', style: { marginBottom: '10px' },
+        text: passed ? (step.final ? 'Certified.' : 'All correct.') : 'Not quite.' }));
+      res.appendChild(el('p', { class: 'lede', style: { margin: '0 auto 22px' },
+        text: right + ' of ' + qs.length + (best >= 4 ? ' · best run ' + best + ' in a row' : '') +
+          (passed ? '.' : (step.mustAll
+            ? '. This check needs all of them right. Go back over the ones below, then try again.'
+            : '. You need ' + Math.ceil(pass * qs.length) + '.')) }));
+
+      /* a wrong answer becomes a link back to the thing that taught it */
+      if (!passed && missed.length) {
+        var fix = el('div', { class: 'fixlist' });
+        var seen = {};
+        missed.forEach(function (q) {
+          if (seen[q.q]) return; seen[q.q] = 1;
+          fix.appendChild(el('div', { class: 'fixrow' }, [
+            el('div', { class: 'grow' }, [
+              el('div', { class: 'fixrow__q', text: q.q }),
+              el('div', { class: 'fixrow__a', text: q.why })
+            ]),
+            q.learn && w.COURSE.module(q.learn.mod) ? el('button', {
+              class: 'btn btn--brand btn--sm nowrap', text: 'Show me again →',
+              onclick: function () { w.go('#/m/' + q.learn.mod + '/' + q.learn.step); }
+            }) : null
+          ]));
+        });
+        res.appendChild(el('div', { class: 'fixwrap' }, [
+          el('div', { class: 'simside__t', style: { marginBottom: '10px' }, text: 'Go over these, then come back' }),
+          fix
+        ]));
+      }
+
+      res.appendChild(el('div', { class: 'row center gap-10 wrap', style: { justifyContent: 'center', marginTop: '22px' } }, [
+        el('button', {
+          class: 'btn ' + (passed ? 'btn--ghost' : 'btn--primary'),
+          text: passed ? 'Take it again' : 'Try the check again',
+          onclick: function () {
+            i = 0; right = 0; streak = 0; best = 0; missed = [];
+            seed = Date.now() % 100000;
+            qs = w.QUIZ.pick(step.bank, step.count || 14, seed); paintQ();
+          }
+        })
       ]));
       qHost.appendChild(res);
-      if (passed) { Sound.good(); complete('<b>Final exam passed.</b>'); }
+      if (passed) { Sound.good(); complete(step.final ? '<b>Final exam passed.</b>' : '<b>Every answer right.</b>'); }
     }
 
     paintQ();

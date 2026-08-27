@@ -16,26 +16,22 @@
       note: 'The real box, unboxed and wired up.',
       /* placed as a fraction of the true runtime, read from the player */
       checkpoints: [
-        { at: 0.12, topic: 'Inputs',
-          q: 'The HD8 takes its camera feeds over which connector?',
-          opts: ['SDI on BNC', 'HDMI', 'USB-C', 'Ethernet only'],
-          a: 0, why: 'All-SDI switcher: eight SDI inputs on BNC. HDMI here is output only.' },
-        { at: 0.32, topic: 'The two buses',
-          q: 'What does the RED row control?',
-          opts: ['What is on air right now', 'What goes next', 'The multiview', 'The recording'],
-          a: 0, why: 'Red is program - live. Green is preview - next.' },
-        { at: 0.54, topic: 'Video standard',
-          q: 'A camera set to a different video standard will:',
-          opts: ['Show as no signal', 'Be converted automatically', 'Appear in multiview only', 'Change the switcher to match'],
-          a: 0, why: 'One standard for the whole system. No per-input conversion.' },
-        { at: 0.76, topic: 'Control',
-          q: 'How does ATEM Software Control normally reach the switcher?',
-          opts: ['Over ethernet, by IP address', 'Over HDMI', 'Over SDI', 'Bluetooth'],
-          a: 0, why: 'Ethernet - the HD8 has a 4-port switch built in. USB-C works as a direct link too.' },
-        { at: 0.92, topic: 'Order of work',
-          q: 'Which comes first on show day?',
-          opts: ['Set the video standard', 'Enter the stream key', 'Start recording', 'Load graphics'],
-          a: 0, why: 'Changing the standard later drops every input and stops any recording.' }
+        { at: 0.15, topic: 'The two rows',
+          q: 'Which row of buttons is the one the audience actually sees?',
+          opts: ['The red row', 'The green row', 'Both at once', 'Neither'],
+          a: 0, why: 'Red is live. Green is what you have lined up next, and only you can see it.' },
+        { at: 0.40, topic: 'Cables',
+          q: 'How many cables run between the switcher and each camera?',
+          opts: ['Two — one each way', 'One', 'Three', 'None, it is wireless'],
+          a: 0, why: 'Picture in, and a second cable back so the operator sees the show and gets the red lamp.' },
+        { at: 0.65, topic: 'Picture format',
+          q: 'A camera is set to a different picture format from the switcher. What happens?',
+          opts: ['That input shows nothing at all', 'It is converted automatically', 'It looks slightly worse', 'A warning appears'],
+          a: 0, why: 'There is no conversion and no warning. Everything must be set to the same format.' },
+        { at: 0.88, topic: 'Streaming',
+          q: 'What does the switcher need in order to stream without a computer?',
+          opts: ['A network cable to the internet, and a stream key', 'A second laptop', 'A capture card', 'A USB microphone'],
+          a: 0, why: 'The streaming part is built into the box. The stream key is the password the site gives you.' }
       ]
     },
     extras: [
@@ -46,16 +42,16 @@
 
   var MODULES = [
     { id: 'm01', n: '01', accent: 'brand',
-      title: 'Meet the HD8', blurb: 'Program, preview, and the one job a switcher has.',
+      title: 'What This Box Does', blurb: 'What the box actually does, and why one row of buttons is red.',
       tags: ['Ponder', 'Watch'],
       steps: [
         { type: 'ponder', scene: 'flow', title: 'One picture leaves' },
         { type: 'video', title: 'See the real thing', video: 'primary',
-          intro: 'Five checkpoints. Answer to carry on, rewatch any segment as often as you like.' }
+          intro: 'The video pauses four times for a quick question about what you have learned so far. You can rewatch any part as many times as you like.' }
       ] },
 
     { id: 'm02', n: '02', accent: 'info',
-      title: 'The Back Panel', blurb: 'Every socket you will actually touch.',
+      title: 'The Back Panel', blurb: 'Every socket on the back, in plain English.',
       tags: ['Ponder', 'Find'],
       steps: [
         { type: 'ponder', scene: 'rear', title: 'The back of the box' },
@@ -71,11 +67,13 @@
         { type: 'sim', sim: 'wiring', level: 1, title: 'Cable drill: three cameras',
           intro: 'Drag each cable end onto the right port. Wrong ports buzz.' },
         { type: 'sim', sim: 'wiring', level: 2, title: 'Cable drill: full studio',
-          intro: 'The hard one. Returns, outputs, audio, network, recording and power.' }
+          intro: 'The hard one. Returns, outputs, audio, network, recording and power.' },
+        { type: 'quiz', title: 'Section check', bank: 's1', mustAll: true, count: 7,
+          intro: 'Seven questions on the box and the cables. You need all seven — get one wrong and it will show you exactly where to go back to.' }
       ] },
 
     { id: 'm04', n: '04', accent: 'audio',
-      title: 'Power On', blurb: 'Video standard and network, the two settings that break everything.',
+      title: 'Power On', blurb: 'Picture format and network — the two settings that break everything.',
       tags: ['Ponder', 'Simulation'],
       steps: [
         { type: 'ponder', scene: 'standard', title: 'One format, or nothing' },
@@ -89,25 +87,27 @@
       steps: [
         { type: 'ponder', scene: 'software', title: 'Four tabs, and that is it' },
         { type: 'sim', sim: 'windows-install', title: 'Install and connect',
-          intro: 'A real Windows desktop. Find the installer, run it, launch the software, connect.' }
+          intro: 'A real Windows desktop. Find the installer, run it, launch the software, connect.' },
+        { type: 'quiz', title: 'Section check', bank: 's2', mustAll: true, count: 6,
+          intro: 'Six questions on setting the switcher up. All six have to be right.' }
       ] },
 
     { id: 'm06', n: '06', accent: 'pgm',
-      title: 'Switching Live', blurb: 'Cut, auto, fader bar. The core skill.',
+      title: 'Switching Live', blurb: 'Changing shot: instantly, gently, or by hand.',
       tags: ['Ponder', 'ATEM sim'],
       steps: [
         { type: 'ponder', scene: 'take', title: 'Three ways to take' },
         { type: 'sim', sim: 'atem', mission: 'switching', title: 'Your first live cut',
-          intro: 'The real control surface. Tasks check actual switcher state, not clicks.' }
+          intro: 'This is the real control surface. Every task checks what the switcher is actually doing, not what you clicked. Stuck? Press the ? on any task.' }
       ] },
 
     { id: 'm07', n: '07', accent: 'key',
-      title: 'Keys & Transitions', blurb: 'Green screen, lower thirds, and what sits on top of what.',
+      title: 'Green Screens & Graphics', blurb: 'Cutting a background out, and putting a name on screen.',
       tags: ['Ponder', 'ATEM sim'],
       steps: [
         { type: 'ponder', scene: 'layers', title: 'What sits on top of what' },
-        { type: 'sim', sim: 'atem', mission: 'keying', title: 'Key a guest, bug a graphic',
-          intro: 'Set a wipe, chroma key the green screen, then bring a lower third on downstream.' }
+        { type: 'sim', sim: 'atem', mission: 'keying', title: 'Green screen and a name strip',
+          intro: 'Cut the green background out from behind your guest, then put a name strip along the bottom. Watch the pictures at the top as you go — you will see each step happen.' }
       ] },
 
     { id: 'm08', n: '08', accent: 'brand',
@@ -116,7 +116,9 @@
       steps: [
         { type: 'ponder', scene: 'media', title: 'From your drive to on air' },
         { type: 'sim', sim: 'windows-media', title: 'File Explorer to on air',
-          intro: 'Drag the PNG out of Explorer, into the media pool, and onto the show.' }
+          intro: 'Drag the PNG out of Explorer, into the media pool, and onto the show.' },
+        { type: 'quiz', title: 'Section check', bank: 's3', mustAll: true, count: 8,
+          intro: 'Eight questions on running pictures and graphics. All eight.' }
       ] },
 
     { id: 'm09', n: '09', accent: 'audio',
@@ -125,16 +127,16 @@
       steps: [
         { type: 'ponder', scene: 'audio', title: 'ON, AFV, OFF' },
         { type: 'sim', sim: 'atem', mission: 'audio', title: 'Mix the show',
-          intro: 'Set every channel, clean up the host mic, and keep the master under control.' }
+          intro: 'Decide which microphones are heard, and when. Then tidy up the presenter and keep the overall level safe.' }
       ] },
 
     { id: 'm10', n: '10', accent: 'pvw',
-      title: 'Cameras & Tally', blurb: 'Match them from the switcher, down the return cable.',
+      title: 'Cameras & Tally', blurb: 'Make every camera look like it is in the same room.',
       tags: ['Ponder', 'ATEM sim'],
       steps: [
         { type: 'ponder', scene: 'match', title: 'Make them the same room' },
         { type: 'sim', sim: 'atem', mission: 'camera', title: 'Match camera 2',
-          intro: 'It is dark and cold. Fix it in the right order, then check tally.' }
+          intro: 'Camera 2 is darker and bluer than camera 1. You will see them side by side — fix it in the right order and watch them come together.' }
       ] },
 
     { id: 'm11', n: '11', accent: 'iso',
@@ -143,7 +145,7 @@
       steps: [
         { type: 'ponder', scene: 'out', title: 'Out to the world' },
         { type: 'sim', sim: 'atem', mission: 'stream', title: 'Go live, roll record',
-          intro: 'Set the platform, pick a sane bitrate, choose the right disk, and shut down cleanly.' }
+          intro: 'Point it at YouTube, choose a sensible quality, pick the right drive, and finish the show in the right order.' }
       ] },
 
     { id: 'm12', n: '12', accent: 'brand',
@@ -152,16 +154,19 @@
       steps: [
         { type: 'ponder', scene: 'panel', title: 'Hands on the box' },
         { type: 'sim', sim: 'panel', title: 'Panel drills',
-          intro: 'Crosspoints, shift, fader, joystick, keypad, macros. Thirteen drills.' }
+          intro: 'Crosspoints, shift, fader, joystick, keypad, macros. Thirteen drills.' },
+        { type: 'quiz', title: 'Section check', bank: 's4', mustAll: true, count: 9,
+          intro: 'Nine questions on sound, cameras, output and the panel. All nine.' }
       ] },
 
     { id: 'm13', n: '13', accent: 'pgm', final: true,
-      title: 'Run The Show', blurb: 'Everything, in order, for real.',
+      title: 'Run The Show', blurb: 'The rig is built. You just have to direct it, on the clock.',
       tags: ['Live sim', 'Final'],
       steps: [
         { type: 'sim', sim: 'atem', mission: 'showtime', title: 'Live: run the show',
-          intro: 'Eleven beats, in order, from holding slide to clean shutdown. No hints on the order - you know it by now.' },
-        { type: 'quiz', title: 'Final exam', bank: 'final', pass: 0.8, count: 14, final: true }
+          intro: 'Everything is already set up for you — the stream key, the drive, the graphics, the green screen. All you have to do is direct. Press start, then follow the running order down the right side and hit each cue on time.' },
+        { type: 'quiz', title: 'Written final', bank: 'final', pass: 0.85, count: 14, final: true,
+          intro: 'Fourteen questions drawn from the whole course. 85% to pass.' }
       ] }
   ];
 

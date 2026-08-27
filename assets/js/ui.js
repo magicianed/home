@@ -168,9 +168,12 @@
     var active = false;
     target.addEventListener('pointerdown', function (e) {
       if (e.button !== undefined && e.button !== 0) return;
+      /* start() may veto by returning false - used so that buttons sitting
+         inside a drag handle still receive their click. preventDefault on
+         pointerdown suppresses the click event, so it must come after. */
+      if (handlers.start && handlers.start(e) === false) return;
       active = true;
       try { if (target.setPointerCapture) target.setPointerCapture(e.pointerId); } catch (err) {}
-      handlers.start && handlers.start(e);
       e.preventDefault();
     });
     target.addEventListener('pointermove', function (e) {
@@ -186,8 +189,43 @@
     target.addEventListener('pointercancel', end);
   }
 
+  /* ---------- spotlight: "show me where" ---------- */
+  var spotTimer = null;
+  function spotlight(root, selector) {
+    qsa('.is-spot', root).forEach(function (n) { n.classList.remove('is-spot'); });
+    if (spotTimer) clearTimeout(spotTimer);
+    var targets = qsa(selector, root);
+    if (!targets.length) { toast('Nothing to point at on this screen yet.', 'info'); return false; }
+    targets.forEach(function (n) { n.classList.add('is-spot'); });
+    try { targets[0].scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {}
+    spotTimer = setTimeout(function () {
+      targets.forEach(function (n) { n.classList.remove('is-spot'); });
+    }, 6000);
+    Sound.tap();
+    return true;
+  }
+
+  /* a task row with an optional "show me" button */
+  function taskRow(t, done, onSpot) {
+    var kids = [
+      el('i', { class: 'task__box', text: '✓' }),
+      el('div', { class: 'grow' }, [
+        el('span', { text: t.label }),
+        !done && t.hint ? el('span', { class: 'task__hint', text: t.hint }) : null
+      ])
+    ];
+    if (!done && t.spot && onSpot) {
+      kids.push(el('button', {
+        class: 'task__q', text: '?', title: 'Show me where',
+        onclick: function (e) { e.stopPropagation(); onSpot(t); }
+      }));
+    }
+    return el('div', { class: 'task' + (done ? ' is-done' : '') }, kids);
+  }
+
   w.UI = {
     el: el, qs: qs, qsa: qsa, clear: clear, esc: esc, append: append,
+    spotlight: spotlight, taskRow: taskRow,
     toast: toast, modal: modal, confirm: confirmBox,
     Sound: Sound, fmtTime: fmtTime, shuffle: shuffle, clamp: clamp, drag: drag
   };

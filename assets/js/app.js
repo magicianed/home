@@ -55,20 +55,23 @@
         var mod = w.COURSE.module(r.mod);
         if (!mod) { go('#/dashboard'); return; }
         if (!w.COURSE.moduleUnlocked(mod)) {
-          w.UI.toast('That module is locked - finish the one before it first.', 'info');
+          w.UI.toast('Locked — finish the level before it first.', 'info');
           go('#/dashboard'); return;
         }
         current = w.ViewLesson.render(view, mod, r.step);
-        setCrumbs([['Modules', '#/dashboard'], ['Module ' + mod.n + ' · ' + mod.title, null]]);
+        setCrumbs([['Levels', '#/dashboard'], ['Level ' + mod.n + ' · ' + mod.title, null]]);
       } else if (r.name === 'reference') {
         w.ViewDashboard.reference(view);
-        setCrumbs([['Reference deck', null]]);
+        setCrumbs([['Cheat sheet', null]]);
+      } else if (r.name === 'walkthrough') {
+        current = w.ViewWalkthrough.render(view);
+        setCrumbs([['Setup walkthrough', null]]);
       } else if (r.name === 'certificate') {
         w.ViewCertificate.render(view);
         setCrumbs([['Certificate', null]]);
       } else {
         w.ViewDashboard.dashboard(view);
-        setCrumbs([['All modules', null]]);
+        setCrumbs([['All levels', null]]);
       }
 
       w.State.setRoute(location.hash);
@@ -113,7 +116,7 @@
       var b = el('button', {
         class: 'navitem' + (active ? ' is-active' : '') + (done ? ' is-done' : '') + (unlocked ? '' : ' is-locked'),
         onclick: function () {
-          if (!unlocked) { Sound.bad(); w.UI.toast('Locked - finish the previous module first.', 'info'); return; }
+          if (!unlocked) { Sound.bad(); w.UI.toast('Locked — finish the previous level first.', 'info'); return; }
           go('#/m/' + m.id + '/' + firstOpen(m));
         }
       }, [

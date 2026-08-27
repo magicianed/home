@@ -112,6 +112,17 @@
         return S.add(g, o.key, o.always);
       },
 
+      /* a socket. Cables terminate on exactly these coordinates, so a
+         cable always meets a visible hole instead of floating near one. */
+      port: function (x, y, z, o) {
+        o = o || {};
+        var p = iso(x, y, z);
+        var g = sv('g', { class: 'pn-port', style: o.accent ? '--acc:' + o.accent : null });
+        g.appendChild(sv('circle', { cx: p[0], cy: p[1], r: 5.4, class: 'pn-port__r' }));
+        g.appendChild(sv('circle', { cx: p[0], cy: p[1], r: 2.2, class: 'pn-port__h' }));
+        return S.add(g, o.key, o.always);
+      },
+
       /* cable between two iso points, with signal dots that ride it */
       cable: function (p1, p2, o) {
         o = o || {};
@@ -201,7 +212,10 @@
     var btnPlay = el('button', { class: 'pn__b pn__b--play', title: 'Play / pause', onclick: function () { playing = !playing; if (playing) { if (i >= beats.length - 1) go(0); else schedule(); } else stop(); paintCtl(); } });
     var btnNext = el('button', { class: 'pn__b', title: 'Next', html: '&#9654;', onclick: function () { playing = false; go(i + 1); } });
     var btnAgain = el('button', { class: 'btn btn--ghost btn--sm', text: 'Replay', onclick: function () { playing = true; go(0); } });
-    var gotIt = el('button', { class: 'btn btn--go btn--sm pn__got', text: 'Got it', onclick: finish, hidden: true });
+    var gotIt = el('button', {
+      class: 'btn btn--go btn--sm pn__got', text: 'Got it →', hidden: true,
+      onclick: function () { finish(); if (opts.onNext) opts.onNext(); }
+    });
 
     var ctl = el('div', { class: 'pn__ctl' }, [btnPrev, btnPlay, btnNext, dots, btnAgain, gotIt]);
 

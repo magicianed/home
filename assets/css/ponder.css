@@ -127,3 +127,8 @@
   .pn__capt{ font-size:15px; }
   .pn__cap{ padding:13px 15px; }
 }
+
+/* sockets - cables always terminate on one of these */
+.pn-port__r{ fill:#0a0a0c; stroke:var(--acc,#4a4a55); stroke-width:1.6; }
+.pn-port__h{ fill:var(--acc,#4a4a55); }
+.pn-el.is-hi .pn-port__r{ stroke:#fff; }

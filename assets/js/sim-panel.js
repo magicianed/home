@@ -380,10 +380,9 @@
       var list = el('div', { class: 'tasks' });
       DRILLS.forEach(function (t) {
         var d = !!doneT[t.id];
-        list.appendChild(el('div', { class: 'task' + (d ? ' is-done' : '') }, [
-          el('i', { class: 'task__box', text: '✓' }),
-          el('div', { class: 'grow' }, [el('span', { text: t.label }), !d ? el('span', { class: 'task__hint', text: t.hint }) : null])
-        ]));
+        list.appendChild(w.UI.taskRow(t, d, function (tt) {
+          w.UI.spotlight(root, tt.spot);
+        }));
       });
       taskPanel.appendChild(list);
       var n = DRILLS.filter(function (t) { return doneT[t.id]; }).length;

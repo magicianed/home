@@ -9,8 +9,8 @@
      ONBOARDING
      ============================================================ */
   function renderGate(host, onDone) {
-    var first = el('input', { class: 'input', type: 'text', placeholder: 'Liam', autocomplete: 'given-name', maxlength: '40' });
-    var last = el('input', { class: 'input', type: 'text', placeholder: 'Fitzgerald', autocomplete: 'family-name', maxlength: '40' });
+    var first = el('input', { class: 'input', type: 'text', placeholder: 'Your first name', autocomplete: 'given-name', maxlength: '40' });
+    var last = el('input', { class: 'input', type: 'text', placeholder: 'Your last name', autocomplete: 'family-name', maxlength: '40' });
     var err = el('div', { class: 'gate__err' });
 
     function submit() {

@@ -37,17 +37,17 @@
       apps: ['explorer'],
       installed: false,
       tasks: [
-        { id: 'a', label: 'Open File Explorer', hint: 'Click the folder on the taskbar.',
+        { id: 'a', label: 'Open File Explorer', hint: 'Click the yellow folder icon on the desktop.', spot: '.dicon',
           check: function (c) { return c.opened.explorer; } },
-        { id: 'b', label: 'Go to the Downloads folder', hint: 'Quick access, on the left.',
+        { id: 'b', label: 'Go to the Downloads folder', hint: 'It is in the list down the left side of the window.', spot: '.fx__side',
           check: function (c) { return c.path === 'C:\\Users\\Operator\\Downloads'; } },
-        { id: 'c', label: 'Run Blackmagic_ATEM_Switchers_9.6.exe', hint: 'Double-click the installer.',
+        { id: 'c', label: 'Run the Blackmagic installer', hint: 'Double-click Blackmagic_ATEM_Switchers_9.6.exe.', spot: '.fx__grid .fi',
           check: function (c) { return c.opened.installer; } },
         { id: 'd', label: 'Complete the installation', hint: 'Work through the installer to Finish.',
           check: function (c) { return c.installed; } },
-        { id: 'e', label: 'Launch ATEM Software Control', hint: 'Its icon appears on the desktop once installed.',
+        { id: 'e', label: 'Open ATEM Software Control', hint: 'A new icon appeared on the desktop once it installed.', spot: '.win__icons',
           check: function (c) { return c.opened.atem; } },
-        { id: 'f', label: 'Connect to the ATEM Television Studio HD8', hint: 'Pick it from the device list.',
+        { id: 'f', label: 'Connect to the ATEM Television Studio HD8', hint: 'Pick it from the list. One of the others is on old firmware and will refuse.', spot: '.devsel',
           check: function (c) { return c.connected; } }
       ]
     },
@@ -59,22 +59,22 @@
       tasks: [
         { id: 'a', label: 'Open File Explorer and go to C:\\Shows\\Graphics', hint: 'Use the address bar or the sidebar.',
           check: function (c) { return c.path === 'C:\\Shows\\Graphics'; } },
-        { id: 'b', label: 'Open ATEM Software Control and switch to the Media tab',
-          hint: 'The tab row across the top of the application.',
+        { id: 'b', label: 'Open ATEM Software Control and go to the Media page',
+          hint: 'The row of four page names across the top.', spot: '.awtab',
           check: function (c) { return c.opened.atem && c.atem && c.atem.state.tab === 'media'; } },
         { id: 'c', label: 'Drag LT_01_HostName.png from Explorer into media pool slot 1',
           hint: 'Drag the file straight across from one window to the other.',
           check: function (c) { return c.atem && c.atem.state.pool[0] && c.atem.state.pool[0].name === 'LT_01_HostName.png'; } },
         { id: 'd', label: 'Also load HOLDING_Slide.png into slot 2', hint: 'Same drag, different slot.',
           check: function (c) { return c.atem && c.atem.state.pool[1] && c.atem.state.pool[1].name === 'HOLDING_Slide.png'; } },
-        { id: 'e', label: 'On the Switcher tab, point Media Player 1 at slot 1',
-          hint: 'Open the Media Players palette.',
+        { id: 'e', label: 'Go back to the Switcher page and point Player 1 at slot 1',
+          hint: 'Open the Media Players panel down the right side.', spot: '.pal[data-pal="media"]',
           check: function (c) { return c.atem && c.atem.state.players[0].slot === 0; } },
-        { id: 'f', label: 'Set DSK 1 fill to Media Player 1, key to Media Player 1 Key, and tick Pre Multiplied Key',
-          hint: 'Downstream Key palette.',
+        { id: 'f', label: 'In the graphic layer, set Fill to Player 1, Key to Player 1 Key, and switch on Pre Multiplied Key',
+          hint: 'Fill is the picture. Key is the see-through part.', spot: '.pal[data-pal="dsk"]',
           check: function (c) { var d = c.atem && c.atem.state.dsk[0]; return d && d.fill === 3010 && d.keySrc === 3011 && d.pre; } },
-        { id: 'g', label: 'Put a camera on program and take DSK 1 on air',
-          hint: 'The graphic should appear over the picture.',
+        { id: 'g', label: 'Put a camera on air, then switch the graphic on',
+          hint: 'Watch the top-left picture — the name strip appears over the camera.', spot: '.dskstrip[data-dsk="1"] .tcb--air',
           check: function (c) { var s = c.atem && c.atem.state; return s && s.dsk[0].onAir && s.program >= 1 && s.program <= 8; } }
       ]
     },
@@ -84,23 +84,23 @@
       apps: ['setup'],
       installed: true,
       tasks: [
-        { id: 'a', label: 'Open ATEM Setup', hint: 'Desktop icon or taskbar.',
+        { id: 'a', label: 'Open ATEM Setup', hint: 'The desktop icon marked BS.', spot: '.win__icons',
           check: function (c) { return c.opened.setup; } },
-        { id: 'b', label: 'Select the ATEM Television Studio HD8', hint: 'The device list on the left.',
+        { id: 'b', label: 'Select your switcher', hint: 'Click it in the list down the left.', spot: '.bs__side',
           check: function (c) { return c.setup.selected; } },
-        { id: 'c', label: 'Rename it to Studio A HD8', hint: 'The Name field on the Setup tab.',
+        { id: 'c', label: 'Rename it to Studio A HD8', hint: 'Type it into the Name box. A name you recognise beats the default.', spot: '.bs__pane .bsf__i',
           check: function (c) { return c.setup.name === 'Studio A HD8'; } },
-        { id: 'd', label: 'Set the video standard to 1080p50 for a European studio',
-          hint: 'The Configure tab.',
+        { id: 'd', label: 'Set the picture format to 1080p50',
+          hint: 'It is on the Configure tab. 1080p50 is the European setting.', spot: '.bs__tabs',
           check: function (c) { return c.setup.standard === '1080p50'; } },
-        { id: 'e', label: 'Switch the network from DHCP to a static address', hint: 'Setup tab, Configure Address.',
+        { id: 'e', label: 'Give it a fixed network address instead of an automatic one', hint: 'On the Setup tab, choose Using Static IP.', spot: '.bsradio',
           check: function (c) { return c.setup.dhcp === false; } },
         { id: 'f', label: 'Set the IP to 192.168.10.240 with mask 255.255.255.0 and gateway 192.168.10.1',
           hint: 'All three fields must be right.',
           check: function (c) { return c.setup.ip === '192.168.10.240' && c.setup.mask === '255.255.255.0' && c.setup.gw === '192.168.10.1'; } },
-        { id: 'g', label: 'Set the multiview to a 10-up layout', hint: 'Configure tab.',
+        { id: 'g', label: 'Set your monitor to show 10 pictures at once', hint: 'Multiview Layout, on the Configure tab.', spot: '.bs__tabs',
           check: function (c) { return c.setup.mv === '10 up'; } },
-        { id: 'h', label: 'Save the settings to the switcher', hint: 'The Save button, bottom right.',
+        { id: 'h', label: 'Save the settings to the switcher', hint: 'Bottom right. The pictures will blink as it applies them.', spot: '.bs__foot',
           check: function (c) { return c.setup.saved; } }
       ]
     }
@@ -175,6 +175,8 @@
       var off = { x: 0, y: 0 };
       w.UI.drag(bar, {
         start: function (e) {
+          /* let the minimise / maximise / close buttons have their click */
+          if (e.target.closest && e.target.closest('.w32__b')) return false;
           var r = win.getBoundingClientRect(), pr = winLayer.getBoundingClientRect();
           off.x = e.clientX - r.left; off.y = e.clientY - r.top;
           win.classList.add('is-drag');
@@ -504,10 +506,10 @@
       var list = el('div', { class: 'tasks' });
       mission.tasks.forEach(function (t) {
         var d = !!doneT[t.id];
-        list.appendChild(el('div', { class: 'task' + (d ? ' is-done' : '') }, [
-          el('i', { class: 'task__box', text: '\u2713' }),
-          el('div', { class: 'grow' }, [el('span', { text: t.label }), !d ? el('span', { class: 'task__hint', text: t.hint }) : null])
-        ]));
+        list.appendChild(w.UI.taskRow(t, d, function (tt) {
+          if (tt.pre) { try { tt.pre(c); } catch (e) {} }
+          setTimeout(function () { w.UI.spotlight(desktop, tt.spot); }, 70);
+        }));
       });
       taskPanel.appendChild(list);
       var n = mission.tasks.filter(function (t) { return doneT[t.id]; }).length;
