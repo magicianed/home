@@ -226,3 +226,9 @@ body{ font-family:var(--sans); letter-spacing:0; }
 }
 .lvpip{ padding:6px 12px 6px 8px; font-size:12.5px; }
 .task{ padding:10px 12px; }
+
+/* drawn icons, not typed ones */
+.icon{ display:block; width:14px; height:14px; flex:none; }
+.navitem__lock{ display:flex; align-items:center; color:var(--ink-4); }
+.navitem.is-locked:hover .navitem__lock{ color:var(--ink-3); }
+.themebtn{ display:grid; place-items:center; }

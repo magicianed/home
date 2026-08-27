@@ -179,19 +179,19 @@
 
   /* small diagrams that give a question the context it needs */
   var FIGS = {
+    /* names the two parts of a meter. It deliberately does not say
+       where the peak ought to sit - that is the question. */
     meter:
-      '<svg viewBox="0 0 240 130" class="qfig__s">' +
-      '<rect x="96" y="10" width="26" height="110" rx="3" fill="var(--surface-0)" stroke="var(--line)"/>' +
-      '<rect x="99" y="52" width="20" height="65" fill="var(--pvw)"/>' +
-      '<rect x="99" y="40" width="20" height="12" fill="var(--audio)"/>' +
-      '<line x1="92" y1="14" x2="126" y2="14" stroke="var(--pgm)" stroke-width="2"/>' +
-      '<text x="134" y="18" fill="var(--pgm)" font-size="11">0 — sound breaks up</text>' +
-      '<line x1="92" y1="40" x2="126" y2="40" stroke="var(--audio)" stroke-width="2"/>' +
-      '<text x="134" y="44" fill="var(--audio)" font-size="11">-6 loudest moment</text>' +
-      '<line x1="92" y1="52" x2="126" y2="52" stroke="var(--pvw)" stroke-width="2"/>' +
-      '<text x="134" y="56" fill="var(--pvw)" font-size="11">-10 aim here</text>' +
-      '<text x="10" y="70" fill="var(--ink-3)" font-size="11">sound</text>' +
-      '<text x="10" y="84" fill="var(--ink-3)" font-size="11">meter</text></svg>',
+      '<svg viewBox="0 0 260 132" class="qfig__s">' +
+      '<rect x="78" y="12" width="30" height="104" rx="2" fill="var(--surface-0)" stroke="var(--line-strong)"/>' +
+      '<rect x="81" y="76" width="24" height="37" fill="var(--ink-3)"/>' +
+      '<rect x="79" y="47" width="28" height="3" fill="var(--ink)"/>' +
+      '<path d="M110 48.5 H130" stroke="var(--line-strong)" stroke-width="1"/>' +
+      '<text x="136" y="52" fill="var(--ink-2)" font-size="12">where it peaks</text>' +
+      '<path d="M110 77 H130" stroke="var(--line-strong)" stroke-width="1"/>' +
+      '<text x="136" y="81" fill="var(--ink-2)" font-size="12">where it usually sits</text>' +
+      '<text x="70" y="66" text-anchor="end" fill="var(--ink-4)" font-size="11">sound</text>' +
+      '<text x="70" y="80" text-anchor="end" fill="var(--ink-4)" font-size="11">meter</text></svg>',
     rows:
       '<svg viewBox="0 0 300 100" class="qfig__s">' +
       '<rect x="8" y="12" width="284" height="32" rx="4" fill="var(--pgm-dim)" stroke="var(--pgm)"/>' +

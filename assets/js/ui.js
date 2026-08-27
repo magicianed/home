@@ -38,6 +38,33 @@
     });
   }
 
+  /* ---------- icons ----------
+     Drawn, not typed. An emoji picks up the operating system's own
+     styling and colour, which is the quickest way to make an interface
+     look thrown together. */
+  var SVGNS = 'http://www.w3.org/2000/svg';
+  var ICONS = {
+    lock: '<rect x="3.4" y="7" width="9.2" height="6.4" rx="1.2"/>' +
+          '<path d="M5.7 7V5.3a2.3 2.3 0 0 1 4.6 0V7"/>',
+    sun:  '<circle cx="8" cy="8" r="2.9"/>' +
+          '<path d="M8 1.3v1.5M8 13.2v1.5M2.6 2.6l1.1 1.1M12.3 12.3l1.1 1.1M1.3 8h1.5M13.2 8h1.5M2.6 13.4l1.1-1.1M12.3 3.7l1.1-1.1"/>',
+    moon: '<path d="M13.1 9.7A5.6 5.6 0 0 1 6.3 2.9 5.6 5.6 0 1 0 13.1 9.7Z"/>'
+  };
+  function icon(name, size) {
+    var n = document.createElementNS(SVGNS, 'svg');
+    n.setAttribute('viewBox', '0 0 16 16');
+    n.setAttribute('class', 'icon');
+    n.setAttribute('fill', 'none');
+    n.setAttribute('stroke', 'currentColor');
+    n.setAttribute('stroke-width', '1.35');
+    n.setAttribute('stroke-linecap', 'round');
+    n.setAttribute('stroke-linejoin', 'round');
+    n.setAttribute('aria-hidden', 'true');
+    if (size) { n.style.width = size + 'px'; n.style.height = size + 'px'; }
+    n.innerHTML = ICONS[name] || '';
+    return n;
+  }
+
   /* ---------- toast ---------- */
   var toastRoot = null;
   function toast(msg, kind, ms) {
@@ -218,7 +245,8 @@
      ============================================================ */
   var AUTOKEY = 'magicianed.coach.auto';
   function coach(cfg) {
-    var auto = (function () { try { return w.localStorage.getItem(AUTOKEY) !== 'off'; } catch (e) { return true; } })();
+    /* off unless you ask for it - the hand-holding should be opt in */
+    var auto = (function () { try { return w.localStorage.getItem(AUTOKEY) === 'on'; } catch (e) { return false; } })();
     var lastId = null;
 
     var num = el('span', { class: 'coach__n mono' });
@@ -298,7 +326,7 @@
 
   w.UI = {
     el: el, qs: qs, qsa: qsa, clear: clear, esc: esc, append: append,
-    spotlight: spotlight, taskRow: taskRow, coach: coach,
+    spotlight: spotlight, taskRow: taskRow, coach: coach, icon: icon,
     toast: toast, modal: modal, confirm: confirmBox,
     Sound: Sound, fmtTime: fmtTime, shuffle: shuffle, clamp: clamp, drag: drag
   };

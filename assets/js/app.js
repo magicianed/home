@@ -102,7 +102,11 @@
     document.documentElement.setAttribute('data-theme', t);
     try { w.localStorage.setItem(TKEY, t); } catch (e) {}
     var b = qs('#themeBtn');
-    if (b) { b.textContent = t === 'light' ? '☾' : '☀'; b.title = t === 'light' ? 'Switch to dark' : 'Switch to light'; }
+    if (b) {
+      clear(b);
+      b.appendChild(w.UI.icon(t === 'light' ? 'moon' : 'sun', 15));
+      b.title = t === 'light' ? 'Switch to dark' : 'Switch to light';
+    }
   }
   setTheme(theme());
 
@@ -133,7 +137,7 @@
       }, [
         el('span', { class: 'navitem__num', text: done ? '✓' : m.n }),
         el('span', { class: 'navitem__label', text: m.title }),
-        unlocked ? null : el('span', { class: 'navitem__lock', text: '🔒' })
+        unlocked ? null : el('span', { class: 'navitem__lock' }, [w.UI.icon('lock', 13)])
       ]);
       railNav.appendChild(b);
     });
