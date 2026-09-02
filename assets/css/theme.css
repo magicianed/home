@@ -246,3 +246,67 @@ body{ font-family:var(--sans); letter-spacing:0; }
 .hintcount.is-out{ border-color:var(--pgm); }
 .hintcount.is-out .hintcount__n{ color:var(--pgm); }
 .coach--exam .btn{ display:none; }
+
+/* ============================================================
+   setup walkthrough: configure button, shopping list, checks
+   ============================================================ */
+.wkhead{ display:flex; align-items:flex-start; gap:24px; margin-bottom:22px; flex-wrap:wrap; }
+.cfgbtn{ flex:none; gap:8px; }
+.wkcfg{
+  margin-top:12px; font-size:12.5px; color:var(--ink-3);
+  padding:6px 10px; border:1px solid var(--line); border-radius:2px;
+  background:var(--surface-1); display:inline-block;
+}
+
+.wkshop{ list-style:none; padding:0; margin:14px 0 0; display:flex; flex-direction:column; gap:1px; }
+.wkshop li{
+  display:flex; align-items:baseline; gap:14px; padding:9px 12px;
+  background:var(--surface-1); border:1px solid var(--line); border-bottom:0;
+}
+.wkshop li:last-child{ border-bottom:1px solid var(--line); }
+.wkshop__q{ font-family:var(--cond); font-weight:600; font-size:14px; color:var(--ink); min-width:170px; }
+.wkshop__w{ font-size:13.5px; color:var(--ink-3); }
+
+.wkcheck{
+  display:flex; align-items:baseline; gap:12px; margin-top:16px;
+  padding:11px 14px; border-left:2px solid var(--pvw); background:var(--pvw-dim);
+  font-size:13.5px; color:var(--ink-2); line-height:1.55;
+}
+.wkcheck__l{ font-size:11px; font-weight:600; color:var(--pvw); flex:none; }
+
+/* ---- the configure panel ---- */
+.cfgform{ display:flex; flex-direction:column; gap:1px; }
+.cfgrow{
+  display:flex; align-items:center; gap:20px; padding:13px 14px;
+  background:var(--surface-1); border:1px solid var(--line); border-bottom:0;
+}
+.cfgrow:last-child{ border-bottom:1px solid var(--line); }
+.cfgrow__l{ font-size:14px; font-weight:500; color:var(--ink); line-height:1.35; }
+.cfgrow__h{ font-size:12.5px; color:var(--ink-4); margin-top:4px; line-height:1.5; max-width:52ch; }
+
+.cfgnum{ display:flex; align-items:center; gap:2px; flex:none; }
+.cfgnum__b{
+  width:30px; height:30px; border:1px solid var(--line-strong); background:var(--surface-2);
+  color:var(--ink-2); font-size:15px; line-height:1; border-radius:2px;
+  transition:all var(--t-fast) var(--e-out);
+}
+.cfgnum__b:hover{ background:var(--surface-3); color:var(--ink); }
+.cfgnum__v{
+  min-width:38px; text-align:center; font-family:var(--cond);
+  font-size:17px; font-weight:600; color:var(--ink);
+}
+
+.cfgseg{ display:flex; gap:2px; flex:none; }
+.cfgseg--wrap{ flex-wrap:wrap; justify-content:flex-end; max-width:300px; }
+.cfgseg__b{
+  padding:7px 13px; font-size:12.5px; border-radius:2px;
+  background:var(--surface-2); border:1px solid var(--line); color:var(--ink-3);
+  transition:all var(--t-fast) var(--e-out); white-space:nowrap;
+}
+.cfgseg__b:hover{ background:var(--surface-3); color:var(--ink-2); }
+.cfgseg__b.is-on{ background:var(--surface-4); border-color:var(--ink-3); color:var(--ink); font-weight:500; }
+
+@media(max-width:640px){
+  .cfgrow{ flex-direction:column; align-items:stretch; gap:12px; }
+  .cfgseg--wrap{ max-width:none; justify-content:flex-start; }
+}

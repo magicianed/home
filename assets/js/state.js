@@ -21,6 +21,7 @@
     seconds: 0,       // time on task
     xp: 0,
     examHints: 5,     // hints remaining for the final, across all four stages
+    rig: null,        // the reader's own setup, used to tailor the walkthrough
     certificate: null // {id, issuedAt, name}
   };
 
@@ -164,6 +165,23 @@
       data.certificate = { id: id, issuedAt: Date.now(), name: State.fullName() };
       save(); State.emit('certificate');
       return data.certificate;
+    },
+
+    /* ---------- the reader's own rig ---------- */
+    rig: function () {
+      var d = (w.WALK && w.WALK.defaults) || {};
+      var out = {};
+      Object.keys(d).forEach(function (k) { out[k] = d[k]; });
+      if (data.rig) Object.keys(data.rig).forEach(function (k) {
+        if (data.rig[k] !== undefined && data.rig[k] !== null) out[k] = data.rig[k];
+      });
+      return out;
+    },
+    setRig: function (patch) {
+      data.rig = data.rig || {};
+      Object.keys(patch).forEach(function (k) { data.rig[k] = patch[k]; });
+      save(); State.emit('rig');
+      return State.rig();
     },
 
     /* ---------- hints (the final only) ---------- */

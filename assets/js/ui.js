@@ -48,7 +48,9 @@
           '<path d="M5.7 7V5.3a2.3 2.3 0 0 1 4.6 0V7"/>',
     sun:  '<circle cx="8" cy="8" r="2.9"/>' +
           '<path d="M8 1.3v1.5M8 13.2v1.5M2.6 2.6l1.1 1.1M12.3 12.3l1.1 1.1M1.3 8h1.5M13.2 8h1.5M2.6 13.4l1.1-1.1M12.3 3.7l1.1-1.1"/>',
-    moon: '<path d="M13.1 9.7A5.6 5.6 0 0 1 6.3 2.9 5.6 5.6 0 1 0 13.1 9.7Z"/>'
+    moon: '<path d="M13.1 9.7A5.6 5.6 0 0 1 6.3 2.9 5.6 5.6 0 1 0 13.1 9.7Z"/>',
+    sliders: '<path d="M1.9 3.6h2.3M8.1 3.6h6M1.9 8h6.2M12 8h2.1M1.9 12.4h2.3M8.1 12.4h6"/>' +
+             '<circle cx="6.15" cy="3.6" r="1.95"/><circle cx="10.05" cy="8" r="1.95"/><circle cx="6.15" cy="12.4" r="1.95"/>'
   };
   function icon(name, size) {
     var n = document.createElementNS(SVGNS, 'svg');
